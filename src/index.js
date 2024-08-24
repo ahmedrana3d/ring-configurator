@@ -206,9 +206,7 @@ startAnimationSequence();
 
 
    await manager.addFromPath("./assets/ring_new.glb");
-  await manager.addFromPath("./assets/gem_2.hdr");
 
-  
 
   // const ground = await viewer.addPlugin(GroundPlugin);
 
