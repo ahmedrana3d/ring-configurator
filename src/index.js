@@ -36,6 +36,7 @@ async function setupViewer() {
   const shank_options = document.querySelectorAll(".shank_options");
   const closeOption = document.querySelectorAll(".close-option");
   const snapshotBtn = document.getElementById("snapshotBtn");
+  const animateBtn = document.getElementById("play_animation");
 
   // Initialize the viewer
   const viewer = new ViewerApp({
@@ -209,6 +210,21 @@ async function setupViewer() {
       showLayout(".layout-1");
     }, 13300);
   }
+
+
+
+
+animateBtn.addEventListener("click", () => {
+hideLayout(".layout-1");
+hideLayout(".options_container");
+startAnimationSequence();
+
+})
+
+
+
+
+
 
   const model = await manager.addFromPath("./assets/ring_new.glb");
 
