@@ -1,3 +1,4 @@
+
 import {
   ViewerApp,
   AssetManagerPlugin,
@@ -104,50 +105,28 @@ async function setupViewer() {
 
   const importer = manager.importer;
 
-  let progressQueue = [];
-  let isAnimating = false;
 
-  importer.addEventListener("onProgress", (event) => {
-    // Calculate the new progress value
-    const progress = (event.loaded / event.total) * 100;
 
-    // Add the progress to the queue
-    progressQueue.push(progress);
+  clipEl.style.transition = "clip-path 0.5s ease"; // Adjust the duration and easing as needed
 
-    // Start the animation if it's not already running
-    if (!isAnimating) {
-      processQueue(() => {
-        // Callback when all progress animations are done
-        startAnimationSequence();
-      });
-    }
-  });
+importer.addEventListener("onProgress", (event) => {
+  // Calculate the new progress value
+  const progress = (event.loaded / event.total) * 100;
 
-  function processQueue(onComplete) {
-    if (progressQueue.length === 0) {
-      isAnimating = false;
-      if (onComplete) onComplete(); // Trigger callback after all animations
-      return;
-    }
+  // Update the clip-path with a smooth transition
+  clipEl.style.clipPath = `inset(${100 - progress}% 0 0 0)`;
+});
 
-    // Get the next progress value from the queue
-    const nextProgress = progressQueue.shift();
 
-    // Animate to the next progress value
-    gsap.to(clipEl, {
-      clipPath: `inset(${100 - nextProgress}% 0 0 0)`,
-      duration: 0.5,
-      ease: "power2.inOut",
-      onComplete: () => {
-        // Process the next value in the queue
-        processQueue(onComplete);
-      },
-    });
+  importer.addEventListener("onLoad", (event) => {
 
-    // Mark as animating
-    isAnimating = true;
-  }
+    startAnimationSequence();
 
+console.log("Loaded")
+
+});
+
+  
   function hideLayout(element) {
     const layout = document.querySelectorAll(element);
     layout.forEach((el) => {
@@ -401,3 +380,6 @@ setupViewer();
 
 // // Add more plugins not available in base, like CanvasSnipperPlugin which has helpers to download an image of the canvas.
 // await viewer.addPlugin(CanvasSnipperPlugin)
+
+
+
