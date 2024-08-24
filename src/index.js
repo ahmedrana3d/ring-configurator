@@ -200,6 +200,9 @@ async function setupViewer() {
       controls.enabled = true;
       controls.maxPolarAngle = Math.PI / 2 - 0.1;
       controls.enableDamping = true;
+      controls.minDistance = 1.00;
+      controls.maxDistance = 40.00;
+ 
 
       // showLayout(".layout-2");
       showLayout(".options_container");
