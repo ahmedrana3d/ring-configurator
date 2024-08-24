@@ -2,7 +2,7 @@ import {
   ViewerApp,
   AssetManagerPlugin,
   addBasePlugins,
-  AssetManagerBasicPopupPlugin,
+  // AssetManagerBasicPopupPlugin,
   CanvasSnipperPlugin,
   FileTransferPlugin,
 
@@ -47,7 +47,7 @@ async function setupViewer() {
   await addBasePlugins(viewer); // check the source: https://codepen.io/repalash/pen/JjLxGmy for the list of plugins added.
   const manager = await viewer.addPlugin(AssetManagerPlugin);
 
-  await viewer.addPlugin(AssetManagerBasicPopupPlugin);
+  // await viewer.addPlugin(AssetManagerBasicPopupPlugin);
   await viewer.addPlugin(FileTransferPlugin);
   // Import and add a GLB file.
   // await viewer.load("./assets/ring_new.glb")
@@ -226,9 +226,10 @@ startAnimationSequence();
 
 
 
-  const model = await manager.addFromPath("./assets/ring_new.glb");
+   await manager.addFromPath("./assets/ring_new.glb");
+  await manager.addFromPath("./assets/gem_2.hdr");
 
-  const object3D = model[0].modelObject;
+  
 
   // const ground = await viewer.addPlugin(GroundPlugin);
 
