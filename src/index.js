@@ -3,35 +3,39 @@ import {
   AssetManagerPlugin,
   addBasePlugins,
   AssetManagerBasicPopupPlugin,
+  CanvasSnipperPlugin,
+  FileTransferPlugin,
 
   // Color, // Import THREE.js internals
   // Texture, // Import THREE.js internals
 } from "webgi";
+
 import "./styles.css";
-import  { getProject, types } from "@theatre/core";
+import { getProject, types } from "@theatre/core";
 // import studio from "@theatre/studio";
 
 import gsap from "gsap";
-import projectState from './state.json'
+import projectState from "./state.json";
 
 async function setupViewer() {
   // studio.initialize()
   // studio.extend(extension)
 
-    // Create a project for the animation
-    const project = getProject('THREE.js x Theatre.js', { state: projectState })
-    
-    // Create a sheet
-    const sheet = project.sheet("Animated scene");
-    const blackScreen = document.getElementById("bg-cover");
-    const redScreen = document.getElementById("bg-red");
-    const logo = document.getElementById("dialedweb_logo");
+  // Create a project for the animation
+  const project = getProject("THREE.js x Theatre.js", { state: projectState });
+
+  // Create a sheet
+  const sheet = project.sheet("Animated scene");
+  const blackScreen = document.getElementById("bg-cover");
+  const redScreen = document.getElementById("bg-red");
+  const logo = document.getElementById("dialedweb_logo");
   const clipEl = document.getElementById("clip-el");
   const centerColorBtns = document.querySelectorAll(".center-color-btn");
-    const options_icon = document.querySelectorAll(".options_edit");
-    const accent_options = document.querySelectorAll(".accent_options");
-    const shank_options = document.querySelectorAll(".shank_options");
-
+  const options_icon = document.querySelectorAll(".options_edit");
+  const accent_options = document.querySelectorAll(".accent_options");
+  const shank_options = document.querySelectorAll(".shank_options");
+  const closeOption = document.querySelectorAll(".close-option");
+  const snapshotBtn = document.getElementById("snapshotBtn");
 
   // Initialize the viewer
   const viewer = new ViewerApp({
@@ -43,7 +47,7 @@ async function setupViewer() {
   const manager = await viewer.addPlugin(AssetManagerPlugin);
 
   await viewer.addPlugin(AssetManagerBasicPopupPlugin);
-
+  await viewer.addPlugin(FileTransferPlugin);
   // Import and add a GLB file.
   // await viewer.load("./assets/ring_new.glb")
 
@@ -143,33 +147,46 @@ async function setupViewer() {
     isAnimating = true;
   }
 
-
-
-
   function hideLayout(element) {
     const layout = document.querySelectorAll(element);
     layout.forEach((el) => {
-         el.style.opacity = 0;
-         el.style.visibility = "hidden";
-     }); 
-   }
+      el.style.opacity = 0;
+      el.style.visibility = "hidden";
+    });
+  }
 
   function showLayout(element) {
     const layout = document.querySelectorAll(element);
     layout.forEach((el) => {
-     el.style.opacity = 0;
-     el.style.visibility = "visible";
-     el.style.transition = "opacity 0.2s ease";
-     setTimeout(() => {
-      el.style.opacity = 1;
-     }, 10);
+      el.style.opacity = 0;
+      el.style.visibility = "visible";
+      el.style.transition = "opacity 0.2s ease";
+      setTimeout(() => {
+        el.style.opacity = 1;
+      }, 10);
     });
   }
 
+  closeOption.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const optionContainer = btn.parentElement;
+      optionContainer.style.transition = "opacity 0.6s ease"; // Add transition property
+      optionContainer.style.opacity = 0; // Start opacity transition
 
+      options_icon.forEach((icon) => {
+        icon.style.filter = "none";
+      });
 
-
-
+      // Use the transitionend event to change visibility after the opacity transition is done
+      optionContainer.addEventListener(
+        "transitionend",
+        () => {
+          optionContainer.style.visibility = "hidden";
+        },
+        { once: true }
+      ); // The { once: true } option ensures the event listener is removed after it fires once
+    });
+  });
 
   function startAnimationSequence() {
     const controls = viewer.scene.activeCamera.controls;
@@ -187,8 +204,6 @@ async function setupViewer() {
       // showLayout(".layout-2");
       showLayout(".options_container");
       showLayout(".layout-1");
-      
-  
     }, 13300);
   }
 
@@ -203,23 +218,22 @@ async function setupViewer() {
     viewer.scene.findObjectsByName("item02")[0].modelObject,
   ];
 
-
   let accents = [];
   for (let i = 1; i <= 20; i++) {
-    const accent = viewer.scene.findObjectsByName(`dia_2_${String(i).padStart(3, '0')}`)[0].modelObject;
+    const accent = viewer.scene.findObjectsByName(
+      `dia_2_${String(i).padStart(3, "0")}`
+    )[0].modelObject;
     accents.push(accent);
   }
   for (let i = 1; i <= 26; i++) {
-    const accent = viewer.scene.findObjectsByName(`dia_1_${String(i).padStart(3, '0')}`)[0].modelObject;
+    const accent = viewer.scene.findObjectsByName(
+      `dia_1_${String(i).padStart(3, "0")}`
+    )[0].modelObject;
     accents.push(accent);
   }
 
-
-
-const oval = viewer.scene.findObjectsByName("oval")[0].modelObject;
-const shank = viewer.scene.findObjectsByName("ring_metal")[0].modelObject;
-
-
+  const oval = viewer.scene.findObjectsByName("oval")[0].modelObject;
+  const shank = viewer.scene.findObjectsByName("ring_metal")[0].modelObject;
 
   const ground = viewer.scene.findObjectsByName("Ground Plane")[0].modelObject;
 
@@ -232,118 +246,129 @@ const shank = viewer.scene.findObjectsByName("ring_metal")[0].modelObject;
     viewer.setDirty();
   });
 
-
-        
   centerColorBtns.forEach((btn) => {
-      btn.addEventListener("click", () => {
-  
-        // drop-shadow(2px 4px 6px black)
-  
-        centerColorBtns.forEach((otherBtn) => {
-          if (otherBtn !== btn) {
-            otherBtn.style.filter = "none";
-          }
-        });
-  
-        btn.style.filter = "drop-shadow(2px 4px 6px black)";
-  
-        const color = btn.dataset.color;
-        oval.material.color.set(color);
-        viewer.setDirty();
-  
-        console.log(color)
-      });
-  });
+    btn.addEventListener("click", () => {
+      // drop-shadow(2px 4px 6px black)
 
+      centerColorBtns.forEach((otherBtn) => {
+        if (otherBtn !== btn) {
+          otherBtn.style.filter = "none";
+        }
+      });
+
+      btn.style.filter = "drop-shadow(2px 4px 6px black)";
+
+      const color = btn.dataset.color;
+      oval.material.color.set(color);
+      viewer.setDirty();
+
+      console.log(color);
+    });
+  });
 
   accent_options.forEach((btn) => {
     btn.addEventListener("click", () => {
+      accent_options.forEach((otherBtn) => {
+        if (otherBtn !== btn) {
+          otherBtn.style.border = "1px solid #a16207";
+        }
+      });
 
+      btn.style.border = "4px solid #a16207";
 
-      
-    accent_options.forEach((otherBtn) => {
-      if (otherBtn !== btn) {
-        otherBtn.style.border = "1px solid #a16207";
-      }
+      const color = btn.dataset.color;
+      accents.forEach((accent) => {
+        accent.material.color.set(color);
+      });
+      viewer.setDirty();
+
+      console.log(color);
     });
-
-    btn.style.border = "4px solid #a16207";
-
-
-
-    const color = btn.dataset.color;
-    accents.forEach((accent) => {
-      accent.material.color.set(color);
-    });
-    viewer.setDirty();
-
-    console.log(color)
-    });
-});
-
-
-shank_options.forEach((btn) => {
-  btn.addEventListener("click", () => {
-
-
-    shank_options.forEach((otherBtn) => {
-      if (otherBtn !== btn) {
-        otherBtn.style.border = "1px solid #a16207";
-      }
-    });
-
-    btn.style.border = "4px solid #a16207";
-
-  const color = btn.dataset.color;
-  shank.material.color.set(color);
-  viewer.setDirty();
-
-  console.log(color)
-
   });
-});
 
+  shank_options.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      shank_options.forEach((otherBtn) => {
+        if (otherBtn !== btn) {
+          otherBtn.style.border = "1px solid #a16207";
+        }
+      });
 
+      btn.style.border = "4px solid #a16207";
 
+      const color = btn.dataset.color;
+      shank.material.color.set(color);
+      viewer.setDirty();
 
+      console.log(color);
+    });
+  });
 
+  options_icon.forEach((icon) => {
+    icon.addEventListener("click", () => {
+      const layout = icon.dataset.value;
 
-options_icon.forEach((icon) => {
-  icon.addEventListener("click", () => {
-    const layout = icon.dataset.value;
-    
-    options_icon.forEach((otherIcon) => {
-      if (otherIcon !== icon) {
-        otherIcon.style.filter = "none";
+      options_icon.forEach((otherIcon) => {
+        if (otherIcon !== icon) {
+          otherIcon.style.filter = "none";
+        }
+      });
+
+      icon.style.filter = "invert(1)";
+
+      if (layout === "gem") {
+        hideLayout(".accent");
+        hideLayout(".shank");
+        showLayout(".gem");
+      } else if (layout === "accent") {
+        hideLayout(".gem");
+        hideLayout(".shank");
+        showLayout(".accent");
+      } else if (layout === "shank") {
+        hideLayout(".gem");
+        hideLayout(".accent");
+        showLayout(".shank");
       }
     });
-
-    icon.style.filter = "invert(1)";
-
-    if (layout === "gem") {
-      hideLayout(".accent");
-      hideLayout(".shank");
-      showLayout(".gem");
-    } else if (layout === "accent") {
-      hideLayout(".gem");
-      hideLayout(".shank");
-      showLayout(".accent");
-    } else if (layout === "shank") {
-      hideLayout(".gem");
-      hideLayout(".accent");
-      showLayout(".shank");
-    }
   });
-});
-
-
-
-    
 
 
 
 
-  
+  // Canvas Plugins 
+
+
+
+  const canvasSnipper = await viewer.addPlugin(CanvasSnipperPlugin);
+
+
+  snapshotBtn.addEventListener("click", () => {
+    canvasSnipper.downloadSnapshot();
+  });
+
+
+  // console.log(canvasSnipper)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 setupViewer();
