@@ -12,7 +12,7 @@ import  { getProject, types } from "@theatre/core";
 // import studio from "@theatre/studio";
 
 import gsap from "gsap";
-import projectState from '../assets/state.json'
+import projectState from './state.json'
 
 async function setupViewer() {
   // studio.initialize()
