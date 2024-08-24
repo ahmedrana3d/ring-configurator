@@ -147,6 +147,19 @@
                     ],
                     "type": "bezier",
                     "value": 0.1400000000001321
+                  },
+                  {
+                    "id": "r9ffijfhSD",
+                    "position": 14.133,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "type": "bezier",
+                    "value": 0.1400000000001321
                   }
                 ]
               },
@@ -774,6 +787,7 @@
   },
   "definitionVersion": "0.4.0",
   "revisionHistory": [
+    "KmzuyaKKtYEsbZah",
     "wFW3f_eXPdFCMZtw",
     "OIyCxXKg8l0eALQF"
   ]

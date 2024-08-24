@@ -1,57 +1,37 @@
 import {
   ViewerApp,
   AssetManagerPlugin,
-  GBufferPlugin,
-  timeout,
-  ProgressivePlugin,
-  TonemapPlugin,
-  SSRPlugin,
-  SSAOPlugin,
-  DiamondPlugin,
-  FrameFadePlugin,
-  GLTFAnimationPlugin,
-  GroundPlugin,
-  BloomPlugin,
-  TemporalAAPlugin,
-  AnisotropyPlugin,
-  GammaCorrectionPlugin,
   addBasePlugins,
-  TweakpaneUiPlugin,
   AssetManagerBasicPopupPlugin,
-  CanvasSnipperPlugin,
-  FileTransferPlugin,
 
   // Color, // Import THREE.js internals
   // Texture, // Import THREE.js internals
 } from "webgi";
 import "./styles.css";
-import core, { getProject, types } from "@theatre/core";
-import studio from "@theatre/studio";
+import  { getProject, types } from "@theatre/core";
+// import studio from "@theatre/studio";
+
 import gsap from "gsap";
+import projectState from '../assets/state.json'
 
 async function setupViewer() {
-    studio.initialize();
-    
+  // studio.initialize()
+  // studio.extend(extension)
+
     // Create a project for the animation
-    const project = getProject("WebGI x Theatre.js");
+    const project = getProject('THREE.js x Theatre.js', { state: projectState })
     
     // Create a sheet
     const sheet = project.sheet("Animated scene");
     const blackScreen = document.getElementById("bg-cover");
     const redScreen = document.getElementById("bg-red");
     const logo = document.getElementById("dialedweb_logo");
-    const customizeBtn = document.getElementById("ringBtn");
   const clipEl = document.getElementById("clip-el");
   const centerColorBtns = document.querySelectorAll(".center-color-btn");
     const options_icon = document.querySelectorAll(".options_edit");
     const accent_options = document.querySelectorAll(".accent_options");
     const shank_options = document.querySelectorAll(".shank_options");
 
-   
-
-
-
-  console.log(logo, blackScreen, redScreen);
 
   // Initialize the viewer
   const viewer = new ViewerApp({
@@ -253,74 +233,6 @@ const shank = viewer.scene.findObjectsByName("ring_metal")[0].modelObject;
   });
 
 
-  // doneBtn.addEventListener("click", () => {
-
-
-  //   gsap.to(".layout-2", {
-  //     opacity: 0,
-  //     duration: 0.8,
-  //     ease: "power2.inOut", // Smoother easing
-  //     onComplete : ()=>{
-  //         // sheet.sequence.play({ range: [13, 14.15] });
-  //         // viewer.scene.activeCamera.controls.autoRotate = true;
-
-
-          
-
-  //         setTimeout(() => {
-  //           gsap.to(".layout-1", {
-  //             opacity: 1,
-  //             duration: 1.5,
-  //             ease: "power2.inOut", // Smoother easing
-              
-  //           })
-  //           showLayout(".layout-1");
-            
-  //           hideLayout(".options_container");
-  //           hideLayout(".layout-2");
-  //         }, 1250);
-
-
-  //       }
-  //   });
-  // });
-      
-     
-      
-//       customizeBtn.addEventListener("click", () => {
-
-
-//           gsap.to(".layout-1", {
-//               opacity: 0,
-//               duration: 1.5,
-//               ease: "power2.inOut", // Smoother easing
-//               onComplete : ()=>{
-//                   // sheet.sequence.play({ range: [13, 14.15] });
-//                   // viewer.scene.activeCamera.controls.autoRotate = true;
-
-
-                  
-
-//                   setTimeout(() => {
-//                     showLayout(".options_container");
-// gsap.to(".layout-2", {
-//                     opacity: 1,
-//                     duration: 1.5,
-//                     ease: "power2.inOut", // Smoother easing
-                 
-// })
-
-// hideLayout(".layout-1");
-//                   }, 1250);
-
-
-//                 }
-//             });
-            
-            
-            
-//         });
-        
         
   centerColorBtns.forEach((btn) => {
       btn.addEventListener("click", () => {
