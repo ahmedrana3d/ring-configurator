@@ -195,6 +195,7 @@ console.log("Loaded")
 
 animateBtn.addEventListener("click", () => {
 hideLayout(".layout-1");
+hideLayout(".layout-2");
 hideLayout(".options_container");
 startAnimationSequence();
 
