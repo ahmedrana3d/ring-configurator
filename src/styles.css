@@ -1,0 +1,65 @@
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+@font-face {
+  font-family: 'Cinzel';
+  src: url('assets/fonts/Cinzel/Cinzel-VariableFont_wght.ttf') format('truetype');
+}
+
+
+.cinzel {
+  font-family: 'Cinzel', sans-serif;
+}
+
+
+body {
+  font-family: sans-serif;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+}
+#webgi-canvas {
+  width: 100%;
+  height: 100%;
+  /* border-radius: 0.5rem; */
+  cursor: grab;
+}
+
+#webgi-canvas:active {
+  cursor: grabbing;
+}
+
+#webgi-canvas-container{
+  width: 100%;
+  height: 100%;
+  /* margin: 10vh 10vw; */
+  /* border-radius: 0.5rem; */
+
+  /* box-shadow: rgba(0, 0, 0, 0.25) 0px 25px 50px -12px; */
+}
+
+.icon-active{
+  content: "";
+  transform: translate3d(35%, 0, 0) translateY(10px);
+  width: 20px;
+  height: 3px;
+  background: #5a3540;
+  border-radius: 10px;
+  display: block;
+}
+
+
+.layout-2{
+  opacity: 0;
+}
+
+/* .no-mouse{
+pointer-events: ;
+} */
