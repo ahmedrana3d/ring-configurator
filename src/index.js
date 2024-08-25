@@ -277,11 +277,11 @@ startAnimationSequence();
       
       accent_options.forEach((otherBtn) => {
         if (otherBtn !== btn) {
-          otherBtn.style.border = "1px solid #a16207";
+          otherBtn.style.filter = "none";
         }
       });
       
-      btn.style.border = "4px solid #a16207";
+      btn.style.filter = "drop-shadow(2px 4px 6px black)";
       
       const color = btn.dataset.color;
       accents.forEach((accent) => {
@@ -299,11 +299,10 @@ startAnimationSequence();
 
       shank_options.forEach((otherBtn) => {
         if (otherBtn !== btn) {
-          otherBtn.style.border = "1px solid #a16207";
+          otherBtn.style.filter = "none";
         }
       });
-
-      btn.style.border = "4px solid #a16207";
+      btn.style.filter = "drop-shadow(2px 4px 6px black)";
 
       const color = btn.dataset.color;
       shank.material.color.set(color);
