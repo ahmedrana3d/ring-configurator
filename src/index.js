@@ -16,6 +16,8 @@ import { getProject, types } from "@theatre/core";
 // import studio from "@theatre/studio";
 
 import gsap from "gsap";
+
+// Rest of the code...
 import projectState from "./state.json";
 
 async function setupViewer() {
@@ -248,44 +250,53 @@ startAnimationSequence();
     btn.addEventListener("click", () => {
       // drop-shadow(2px 4px 6px black)
 
+
+
+
+      
       centerColorBtns.forEach((otherBtn) => {
         if (otherBtn !== btn) {
           otherBtn.style.filter = "none";
         }
       });
-
+      
       btn.style.filter = "drop-shadow(2px 4px 6px black)";
-
+      
       const color = btn.dataset.color;
       oval.material.color.set(color);
       viewer.setDirty();
-
+      
       console.log(color);
     });
   });
-
+  
   accent_options.forEach((btn) => {
     btn.addEventListener("click", () => {
+
+
+      
       accent_options.forEach((otherBtn) => {
         if (otherBtn !== btn) {
           otherBtn.style.border = "1px solid #a16207";
         }
       });
-
+      
       btn.style.border = "4px solid #a16207";
-
+      
       const color = btn.dataset.color;
       accents.forEach((accent) => {
         accent.material.color.set(color);
       });
       viewer.setDirty();
-
+      
       console.log(color);
     });
   });
-
+  
+  
   shank_options.forEach((btn) => {
     btn.addEventListener("click", () => {
+
       shank_options.forEach((otherBtn) => {
         if (otherBtn !== btn) {
           otherBtn.style.border = "1px solid #a16207";
@@ -315,14 +326,74 @@ startAnimationSequence();
       icon.style.filter = "invert(1)";
 
       if (layout === "gem") {
+
+        gsap.to(viewer.scene.activeCamera.position, {
+          x : 0.15000000000012795,
+          y : 2.1199999999999917,
+          z : 1.7899999999999452,
+          duration: 1.5,
+          ease: "power2.inOut",
+          onStart : ()=>{
+            viewer.scene.activeCamera.controls.enabled = false;
+          },
+          onUpdate : ()=>{
+            viewer.scene.activeCamera.positionUpdated();
+          },
+          onComplete : ()=>{
+            viewer.scene.activeCamera.controls.enabled = true;
+          }
+                })
+
+                console.log(viewer.scene.activeCamera.position , "Animation")
+
+
         hideLayout(".accent");
         hideLayout(".shank");
         showLayout(".gem");
       } else if (layout === "accent") {
+
+
+        gsap.to(viewer.scene.activeCamera.position, {
+          x : 0.15000000000012795,
+          y : 2.1199999999999917,
+          z : -1.4800000000000562,
+          duration: 1.5,
+          ease: "power2.inOut",
+          onStart : ()=>{
+            viewer.scene.activeCamera.controls.enabled = false;
+          },
+          onUpdate : ()=>{
+            viewer.scene.activeCamera.positionUpdated();
+          },
+          onComplete : ()=>{
+            viewer.scene.activeCamera.controls.enabled = true;
+          }
+            })
+          
+
         hideLayout(".gem");
         hideLayout(".shank");
         showLayout(".accent");
       } else if (layout === "shank") {
+
+        gsap.to(viewer.scene.activeCamera.position, {
+          x : 2.0300000000001313,
+          y : 1.149999999999992,
+          z : -0.190000000000055,
+          duration: 1.5,
+          ease: "power2.inOut",
+          onStart : ()=>{
+            viewer.scene.activeCamera.controls.enabled = false;
+            
+          },
+          onUpdate : ()=>{
+            viewer.scene.activeCamera.positionUpdated();
+          },
+          onComplete : ()=>{
+            viewer.scene.activeCamera.controls.enabled = true;
+          }
+            })
+
         hideLayout(".gem");
         hideLayout(".accent");
         showLayout(".shank");
