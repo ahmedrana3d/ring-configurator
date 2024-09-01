@@ -13,7 +13,7 @@ import {
 
 import "./styles.css";
 import { getProject, types } from "@theatre/core";
-// import studio from "@theatre/studio";
+// import studio from "@t  heatre/studio";
 
 import gsap from "gsap";
 
@@ -37,6 +37,7 @@ async function setupViewer() {
   const options_icon = document.querySelectorAll(".options_edit");
   const accent_options = document.querySelectorAll(".accent_options");
   const shank_options = document.querySelectorAll(".shank_options");
+  const box_options = document.querySelectorAll(".box_options");
   const closeOption = document.querySelectorAll(".close-option");
   const snapshotBtn = document.getElementById("snapshotBtn");
   const animateBtn = document.getElementById("play_animation");
@@ -235,6 +236,11 @@ startAnimationSequence();
   const oval = viewer.scene.findObjectsByName("oval")[0].modelObject;
   const shank = viewer.scene.findObjectsByName("ring_metal")[0].modelObject;
 
+  const boxItems = [
+    viewer.scene.findObjectsByName("item01")[0].modelObject,
+    viewer.scene.findObjectsByName("item02")[0].modelObject,
+  ]
+
   const ground = viewer.scene.findObjectsByName("Ground Plane")[0].modelObject;
 
   ringBox.onValuesChange((value) => {
@@ -312,6 +318,33 @@ startAnimationSequence();
     });
   });
 
+
+  box_options.forEach((btn) => {
+    btn.addEventListener("click", () => {
+
+      box_options.forEach((otherBtn) => {
+        if (otherBtn !== btn) {
+          otherBtn.style.filter = "none";
+        }
+      });
+      btn.style.filter = "drop-shadow(2px 4px 6px black)";
+
+      const color = btn.dataset.color;
+      const innerColor = btn.dataset.innercolor;
+
+      boxItems[0].material.color.set(color);
+      boxItems[1].material.color.set(innerColor);
+
+      viewer.setDirty();
+
+      console.log(color , innerColor);
+    });
+  });
+
+
+
+
+
   options_icon.forEach((icon) => {
     icon.addEventListener("click", () => {
       const layout = icon.dataset.value;
@@ -348,7 +381,9 @@ startAnimationSequence();
 
         hideLayout(".accent");
         hideLayout(".shank");
+        hideLayout(".box");
         showLayout(".gem");
+
       } else if (layout === "accent") {
 
 
@@ -372,6 +407,7 @@ startAnimationSequence();
 
         hideLayout(".gem");
         hideLayout(".shank");
+        hideLayout(".box");
         showLayout(".accent");
       } else if (layout === "shank") {
 
@@ -395,7 +431,32 @@ startAnimationSequence();
 
         hideLayout(".gem");
         hideLayout(".accent");
+        hideLayout(".box");
         showLayout(".shank");
+      } else if (layout === "box") {
+          
+          gsap.to(viewer.scene.activeCamera.position, {
+            x : 0.05142029733085921,
+            y : 4.978943031325454,
+            z : 8.657993100810216,
+            duration: 1.5,
+            ease: "power2.inOut",
+            onStart : ()=>{
+              viewer.scene.activeCamera.controls.enabled = false;
+            },
+            onUpdate : ()=>{
+              viewer.scene.activeCamera.positionUpdated();
+            },
+            onComplete : ()=>{
+              viewer.scene.activeCamera.controls.enabled = true;
+            }
+              })
+  
+          hideLayout(".gem");
+          hideLayout(".accent");
+          hideLayout(".shank");
+          showLayout(".box");
+
       }
     });
   });
