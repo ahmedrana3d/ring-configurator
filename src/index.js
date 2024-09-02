@@ -209,7 +209,7 @@ startAnimationSequence();
 
 
 
-   await manager.addFromPath("./assets/ring_new.glb");
+   await manager.addFromPath("./assets/ring_white.glb");
 
 
   // const ground = await viewer.addPlugin(GroundPlugin);
