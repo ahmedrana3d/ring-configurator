@@ -41,6 +41,12 @@ async function setupViewer() {
   const closeOption = document.querySelectorAll(".close-option");
   const snapshotBtn = document.getElementById("snapshotBtn");
   const animateBtn = document.getElementById("play_animation");
+  const ovalBtn = document.getElementById("oval-btn");
+  const ovalContainer = document.getElementById("oval-container");
+  const optionContainer = document.getElementById("option-container");
+  // const closeCheck = document.getElementById("close-check");
+  const options_btn = document.querySelectorAll(".options_btn");
+  const closeCheck  = document.querySelectorAll(".close-check");
 
   // Initialize the viewer
   const viewer = new ViewerApp({
@@ -175,7 +181,7 @@ console.log("Loaded")
     const controls = viewer.scene.activeCamera.controls;
 
     setTimeout(() => {
-      sheet.sequence.play({ range: [0, 13] });
+      sheet.sequence.play({ range: [12.9, 13] });
       controls.enabled = false;
     }, 300);
 
@@ -190,7 +196,7 @@ console.log("Loaded")
       // showLayout(".layout-2");
       showLayout(".options_container");
       showLayout(".layout-1");
-    }, 13300);
+    }, 400);
   }
 
 
@@ -243,228 +249,206 @@ startAnimationSequence();
 
   const ground = viewer.scene.findObjectsByName("Ground Plane")[0].modelObject;
 
-  ringBox.onValuesChange((value) => {
-    const { x, y, z } = value.position;
-    diamonds.forEach((diamond) => {
-      diamond.position.set(x, y, z);
-    });
-    ground.material.opacity = value.groundOpacity;
-    viewer.setDirty();
-  });
-
-  centerColorBtns.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      // drop-shadow(2px 4px 6px black)
 
 
 
 
-      
-      centerColorBtns.forEach((otherBtn) => {
-        if (otherBtn !== btn) {
-          otherBtn.style.filter = "none";
+function animateContainer(element) {
+  const container = document.getElementById(element);
+  optionContainer.style.scale =  0.99;
+  optionContainer.style.opacity = 0.4;
+  optionContainer.style.transform = "translateX(-3%)";
+   container.style.transform = "translateX(0)";
+}
+
+function closeContainer(element) {
+  const container = document.getElementById(element);
+  optionContainer.style.opacity = 1;
+  optionContainer.style.scale = 1;
+  optionContainer.style.transform = "translateX(0)";
+  container.style.transform = "translateX(100%)";
+}
+
+
+options_btn.forEach((btn) => {
+
+  btn.addEventListener("click", () => {
+    const container = btn.dataset.container;
+
+    if (container === "oval-container") {
+      gsap.to(viewer.scene.activeCamera.position, {
+        x : 0.15000000000012795,
+        y : 2.1199999999999917,
+        z : 1.7899999999999452,
+        duration: 1.5,
+        ease: "power2.inOut",
+        onStart : ()=>{
+          viewer.scene.activeCamera.controls.enabled = false;
+        },
+        onUpdate : ()=>{
+          viewer.scene.activeCamera.positionUpdated();
+        },
+        onComplete : ()=>{
+          viewer.scene.activeCamera.controls.enabled = true;
         }
-      });
-      
-      btn.style.filter = "drop-shadow(2px 4px 6px black)";
-      
-      const color = btn.dataset.color;
-      oval.material.color.set(color);
-      viewer.setDirty();
-      
-      console.log(color);
-    });
-  });
-  
-  accent_options.forEach((btn) => {
-    btn.addEventListener("click", () => {
-
-
-      
-      accent_options.forEach((otherBtn) => {
-        if (otherBtn !== btn) {
-          otherBtn.style.filter = "none";
-        }
-      });
-      
-      btn.style.filter = "drop-shadow(2px 4px 6px black)";
-      
-      const color = btn.dataset.color;
-      accents.forEach((accent) => {
-        accent.material.color.set(color);
-      });
-      viewer.setDirty();
-      
-      console.log(color);
-    });
-  });
-  
-  
-  shank_options.forEach((btn) => {
-    btn.addEventListener("click", () => {
-
-      shank_options.forEach((otherBtn) => {
-        if (otherBtn !== btn) {
-          otherBtn.style.filter = "none";
-        }
-      });
-      btn.style.filter = "drop-shadow(2px 4px 6px black)";
-
-      const color = btn.dataset.color;
-      shank.material.color.set(color);
-      viewer.setDirty();
-
-      console.log(color);
-    });
-  });
-
-
-  box_options.forEach((btn) => {
-    btn.addEventListener("click", () => {
-
-      box_options.forEach((otherBtn) => {
-        if (otherBtn !== btn) {
-          otherBtn.style.filter = "none";
-        }
-      });
-      btn.style.filter = "drop-shadow(2px 4px 6px black)";
-
-      const color = btn.dataset.color;
-      const innerColor = btn.dataset.innercolor;
-
-      boxItems[0].material.color.set(color);
-      boxItems[1].material.color.set(innerColor);
-
-      viewer.setDirty();
-
-      console.log(color , innerColor);
-    });
-  });
-
-
-
-
-
-  options_icon.forEach((icon) => {
-    icon.addEventListener("click", () => {
-      const layout = icon.dataset.value;
-
-      options_icon.forEach((otherIcon) => {
-        if (otherIcon !== icon) {
-          otherIcon.style.filter = "none";
-        }
-      });
-
-      icon.style.filter = "invert(1)";
-
-      if (layout === "gem") {
-
-        gsap.to(viewer.scene.activeCamera.position, {
-          x : 0.15000000000012795,
-          y : 2.1199999999999917,
-          z : 1.7899999999999452,
-          duration: 1.5,
-          ease: "power2.inOut",
-          onStart : ()=>{
-            viewer.scene.activeCamera.controls.enabled = false;
-          },
-          onUpdate : ()=>{
-            viewer.scene.activeCamera.positionUpdated();
-          },
-          onComplete : ()=>{
-            viewer.scene.activeCamera.controls.enabled = true;
-          }
-                })
-
-                console.log(viewer.scene.activeCamera.position , "Animation")
-
-
-        hideLayout(".accent");
-        hideLayout(".shank");
-        hideLayout(".box");
-        showLayout(".gem");
-
-      } else if (layout === "accent") {
-
-
-        gsap.to(viewer.scene.activeCamera.position, {
-          x : 0.15000000000012795,
-          y : 2.1199999999999917,
-          z : -1.4800000000000562,
-          duration: 1.5,
-          ease: "power2.inOut",
-          onStart : ()=>{
-            viewer.scene.activeCamera.controls.enabled = false;
-          },
-          onUpdate : ()=>{
-            viewer.scene.activeCamera.positionUpdated();
-          },
-          onComplete : ()=>{
-            viewer.scene.activeCamera.controls.enabled = true;
-          }
-            })
-          
-
-        hideLayout(".gem");
-        hideLayout(".shank");
-        hideLayout(".box");
-        showLayout(".accent");
-      } else if (layout === "shank") {
-
-        gsap.to(viewer.scene.activeCamera.position, {
-          x : 2.0300000000001313,
-          y : 1.149999999999992,
-          z : -0.190000000000055,
-          duration: 1.5,
-          ease: "power2.inOut",
-          onStart : ()=>{
-            viewer.scene.activeCamera.controls.enabled = false;
-            
-          },
-          onUpdate : ()=>{
-            viewer.scene.activeCamera.positionUpdated();
-          },
-          onComplete : ()=>{
-            viewer.scene.activeCamera.controls.enabled = true;
-          }
-            })
-
-        hideLayout(".gem");
-        hideLayout(".accent");
-        hideLayout(".box");
-        showLayout(".shank");
-      } else if (layout === "box") {
-          
-          gsap.to(viewer.scene.activeCamera.position, {
-            x : 0.05142029733085921,
-            y : 4.978943031325454,
-            z : 8.657993100810216,
-            duration: 1.5,
-            ease: "power2.inOut",
-            onStart : ()=>{
-              viewer.scene.activeCamera.controls.enabled = false;
-            },
-            onUpdate : ()=>{
-              viewer.scene.activeCamera.positionUpdated();
-            },
-            onComplete : ()=>{
-              viewer.scene.activeCamera.controls.enabled = true;
-            }
               })
-  
-          hideLayout(".gem");
-          hideLayout(".accent");
-          hideLayout(".shank");
-          showLayout(".box");
+          } else if ( container === "shank-container") {
+            gsap.to(viewer.scene.activeCamera.position, {
+              x : 2.0300000000001313,
+              y : 1.149999999999992,
+              z : -0.190000000000055,
+              duration: 1.5,
+              ease: "power2.inOut",
+              onStart : ()=>{
+                viewer.scene.activeCamera.controls.enabled = false;
+                
+              },
+              onUpdate : ()=>{
+                viewer.scene.activeCamera.positionUpdated();
+              },
+              onComplete : ()=>{
+                viewer.scene.activeCamera.controls.enabled = true;
+              }
+                })
+          } else if ( container === "box-container") {
+            gsap.to(viewer.scene.activeCamera.position, {
+              x : 0.05142029733085921,
+              y : 4.978943031325454,
+              z : 8.657993100810216,
+              duration: 1.5,
+              ease: "power2.inOut",
+              onStart : ()=>{
+                viewer.scene.activeCamera.controls.enabled = false;
+              },
+              onUpdate : ()=>{
+                viewer.scene.activeCamera.positionUpdated();
+              },
+              onComplete : ()=>{
+                viewer.scene.activeCamera.controls.enabled = true;
+              }
+                })
+          } else if ( container === "accent-container" ) {
+            gsap.to(viewer.scene.activeCamera.position, {
+              x : 0.15000000000012795,
+              y : 2.1199999999999917,
+              z : -1.4800000000000562,
+              duration: 1.5,
+              ease: "power2.inOut",
+              onStart : ()=>{
+                viewer.scene.activeCamera.controls.enabled = false;
+              },
+              onUpdate : ()=>{
+                viewer.scene.activeCamera.positionUpdated();
+              },
+              onComplete : ()=>{
+                viewer.scene.activeCamera.controls.enabled = true;
+              }
+                })
+          }
 
+
+animateContainer(container)
+  })
+})
+
+
+closeCheck.forEach((btn) => {
+  btn.addEventListener("click", () => {
+closeContainer(btn.dataset.closecontainer)
+  }
+  )
+})
+
+
+
+
+// Oval Btn Configurations 
+
+centerColorBtns.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    // drop-shadow(2px 4px 6px black)
+    centerColorBtns.forEach((otherBtn) => {
+      if (otherBtn !== btn) {
+        otherBtn.style.border = "none";
       }
     });
+    
+    btn.style.border = "1px solid #000";
+    
+    const color = btn.dataset.color;
+    oval.material.color.set(color);
+    viewer.setDirty();
+    
+    console.log(color);
   });
+});
 
 
+shank_options.forEach((btn) => {
+  btn.addEventListener("click", () => {
+
+    shank_options.forEach((otherBtn) => {
+      if (otherBtn !== btn) {
+        otherBtn.style.border = "none";
+      }
+    });
+    btn.style.border = "1px solid #000";
+
+    const color = btn.dataset.color;
+    shank.material.color.set(color);
+    viewer.setDirty();
+
+    console.log(color);
+  });
+});
+
+box_options.forEach((btn) => {
+  btn.addEventListener("click", () => {
+
+console.log(btn)
+
+    box_options.forEach((otherBtn) => {
+      if (otherBtn !== btn) {
+        otherBtn.style.border = "none";
+      }
+    });
+    btn.style.border = "1px solid black";
+
+    const color = btn.dataset.color;
+    const innerColor = btn.dataset.innercolor;
+
+    boxItems[0].material.color.set(color);
+    boxItems[1].material.color.set(innerColor);
+
+    viewer.setDirty();
+
+    console.log(color , innerColor);
+  });
+});
 
 
-  // Canvas Plugins 
+accent_options.forEach((btn) => {
+  btn.addEventListener("click", () => {
+
+
+    
+    accent_options.forEach((otherBtn) => {
+      if (otherBtn !== btn) {
+        otherBtn.style.border = "none";
+      }
+    });
+    
+    btn.style.border = "1px solid black";
+    
+    const color = btn.dataset.color;
+    accents.forEach((accent) => {
+      accent.material.color.set(color);
+    });
+    viewer.setDirty();
+    
+    console.log(color);
+  });
+});
 
 
 
@@ -474,24 +458,6 @@ startAnimationSequence();
   snapshotBtn.addEventListener("click", () => {
     canvasSnipper.downloadSnapshot();
   });
-
-
-  // console.log(canvasSnipper)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

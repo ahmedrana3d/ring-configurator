@@ -36,25 +36,7 @@ body {
   margin: 0;
   padding: 0;
 }
-#webgi-canvas {
-  width: 100%;
-  height: 100%;
-  /* border-radius: 0.5rem; */
-  cursor: grab;
-}
 
-#webgi-canvas:active {
-  cursor: grabbing;
-}
-
-#webgi-canvas-container{
-  width: 100%;
-  height: 100%;
-  /* margin: 10vh 10vw; */
-  /* border-radius: 0.5rem; */
-
-  /* box-shadow: rgba(0, 0, 0, 0.25) 0px 25px 50px -12px; */
-}
 
 .icon-active{
   content: "";
@@ -74,3 +56,8 @@ body {
 /* .no-mouse{
 pointer-events: ;
 } */
+
+
+.transition_slide {
+	transition: all 0.6s cubic-bezier(0.85, 0, 0.15, 1);
+}
