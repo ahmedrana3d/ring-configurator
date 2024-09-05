@@ -59,8 +59,14 @@ async function setupViewer() {
     canvas: document.getElementById("webgi-canvas"),
   });
 
+  const isMobile = window.innerWidth < 768;
 
-  viewer.renderer.displayCanvasScaling = window.devicePixelRatio / 2
+
+if (isMobile) { 
+  viewer.renderer.displayCanvasScaling = window.devicePixelRatio / 2.2
+} else {
+  viewer.renderer.displayCanvasScaling =  Math.min(window.devicePixelRatio, 1)
+}
 
 
   // or use this to add all main ones at once.
@@ -423,8 +429,6 @@ closeContainer(btn.dataset.closecontainer)
   }
   )
 })
-
-const isMobile = window.innerWidth < 768;
 
 
 // Oval Btn Configurations 
