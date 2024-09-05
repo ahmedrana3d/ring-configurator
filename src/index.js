@@ -62,7 +62,6 @@ async function setupViewer() {
 
   viewer.renderer.displayCanvasScaling = window.devicePixelRatio / 2
 
-alert(window.devicePixelRatio / 2)
 
   // or use this to add all main ones at once.
   await addBasePlugins(viewer); // check the source: https://codepen.io/repalash/pen/JjLxGmy for the list of plugins added.
