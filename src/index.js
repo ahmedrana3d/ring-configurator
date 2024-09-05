@@ -59,6 +59,9 @@ async function setupViewer() {
     canvas: document.getElementById("webgi-canvas"),
   });
 
+
+  viewer.renderer.displayCanvasScaling = Math.min(window.devicePixelRatio, 1);
+
   // or use this to add all main ones at once.
   await addBasePlugins(viewer); // check the source: https://codepen.io/repalash/pen/JjLxGmy for the list of plugins added.
   const manager = await viewer.addPlugin(AssetManagerPlugin);
