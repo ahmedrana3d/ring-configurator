@@ -13,15 +13,15 @@ import {
 
 import "./styles.css";
 import { getProject, types } from "@theatre/core";
-import studio from "@theatre/studio";
+// import studio from "@theatre/studio";
 
 import gsap from "gsap";
 
 // Rest of the code...
-import projectState from "./state.json";
+import projectState from "./state_new.json";
 
 async function setupViewer() {
-  studio.initialize()
+  // studio.initialize()
   // studio.extend(extension)
 
   // Create a project for the animation
