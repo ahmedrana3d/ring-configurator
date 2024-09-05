@@ -7,13 +7,13 @@ import {
   CanvasSnipperPlugin,
   FileTransferPlugin,
 
-  // Color, // Import THREE.js internals
+  Color, // Import THREE.js internals
   // Texture, // Import THREE.js internals
 } from "webgi";
 
 import "./styles.css";
 import { getProject, types } from "@theatre/core";
-// import studio from "@t  heatre/studio";
+import studio from "@theatre/studio";
 
 import gsap from "gsap";
 
@@ -21,7 +21,7 @@ import gsap from "gsap";
 import projectState from "./state.json";
 
 async function setupViewer() {
-  // studio.initialize()
+  studio.initialize()
   // studio.extend(extension)
 
   // Create a project for the animation
@@ -43,10 +43,15 @@ async function setupViewer() {
   const animateBtn = document.getElementById("play_animation");
   const ovalBtn = document.getElementById("oval-btn");
   const ovalContainer = document.getElementById("oval-container");
+  const editLayout = document.querySelector(".edit-layout");
+  const editLayoutMobile = document.querySelector(".edit-layout-mobile");
+  
+
   const optionContainer = document.getElementById("option-container");
   // const closeCheck = document.getElementById("close-check");
   const options_btn = document.querySelectorAll(".options_btn");
   const closeCheck  = document.querySelectorAll(".close-check");
+  const mobile_options = document.querySelectorAll(".mobile_options");
 
   // Initialize the viewer
   const viewer = new ViewerApp({
@@ -81,6 +86,7 @@ async function setupViewer() {
     screenOpacity: types.number(0, { nudgeMultiplier: 0.01, range: [0, 1] }),
     redScreenOpacity: types.number(0, { nudgeMultiplier: 0.01, range: [0, 1] }),
     logoOpacity: types.number(0, { nudgeMultiplier: 0.01, range: [0, 1] }),
+    showUI : types.boolean(false)
   });
 
   const ringBox = sheet.object("Ring Box", {
@@ -102,6 +108,16 @@ async function setupViewer() {
     redScreen.style.opacity = value.redScreenOpacity;
     logo.style.opacity = value.logoOpacity;
 
+
+    if (window.innerWidth > 768) {
+      editLayout.style.display = value.showUI ? "block" : "none";
+      editLayoutMobile.style.display = "none"
+    }
+    else {
+      editLayoutMobile.style.display = value.showUI ? "flex" : "none";
+      editLayout.style.display = "none";
+    }
+   
     // console.log(upperbox)
 
     viewer.scene.activeCamera.positionUpdated(); // this must be called to notify the controller on value update
@@ -128,6 +144,9 @@ importer.addEventListener("onProgress", (event) => {
 
 
   importer.addEventListener("onLoad", (event) => {
+
+
+
 
     startAnimationSequence();
 
@@ -180,8 +199,27 @@ console.log("Loaded")
   function startAnimationSequence() {
     const controls = viewer.scene.activeCamera.controls;
 
+
+
+
+
     setTimeout(() => {
-      sheet.sequence.play({ range: [12.9, 13] });
+
+
+      if (window.innerWidth > 768) {
+        const options = viewer.scene.activeCamera.getCameraOptions();
+        options.fov = 25;
+        viewer.scene.activeCamera.setCameraOptions(options);
+      }
+      else {
+        const options = viewer.scene.activeCamera.getCameraOptions();
+        options.fov = 45 ;
+        viewer.scene.activeCamera.setCameraOptions(options);
+  
+      }
+
+
+      sheet.sequence.play({ range: [0, 13.5] });
       controls.enabled = false;
     }, 300);
 
@@ -191,24 +229,16 @@ console.log("Loaded")
       controls.enableDamping = true;
       controls.minDistance = 1.00;
       controls.maxDistance = 40.00;
+      controls.enablePan = false
  
 
       // showLayout(".layout-2");
       showLayout(".options_container");
       showLayout(".layout-1");
-    }, 400);
+    }, 13700);
   }
 
 
-
-
-animateBtn.addEventListener("click", () => {
-hideLayout(".layout-1");
-hideLayout(".layout-2");
-hideLayout(".options_container");
-startAnimationSequence();
-
-})
 
 
 
@@ -376,7 +406,7 @@ centerColorBtns.forEach((btn) => {
     btn.style.border = "1px solid #000";
     
     const color = btn.dataset.color;
-    oval.material.color.set(color);
+    transitionMaterialColor(oval.material, color, 0.25);
     viewer.setDirty();
     
     console.log(color);
@@ -395,34 +425,37 @@ shank_options.forEach((btn) => {
     btn.style.border = "1px solid #000";
 
     const color = btn.dataset.color;
-    shank.material.color.set(color);
+    transitionMaterialColor(shank.material, color, 0.25);
     viewer.setDirty();
 
     console.log(color);
   });
 });
 
+
+
+// Function to animate color transition
+
+// Event listener for button clicks
 box_options.forEach((btn) => {
   btn.addEventListener("click", () => {
+      console.log(btn);
 
-console.log(btn)
+      box_options.forEach((otherBtn) => {
+          if (otherBtn !== btn) {
+              otherBtn.style.border = "none";
+          }
+      });
+      btn.style.border = "1px solid black";
 
-    box_options.forEach((otherBtn) => {
-      if (otherBtn !== btn) {
-        otherBtn.style.border = "none";
-      }
-    });
-    btn.style.border = "1px solid black";
+      const color = btn.dataset.color;
+      const innerColor = btn.dataset.innercolor;
 
-    const color = btn.dataset.color;
-    const innerColor = btn.dataset.innercolor;
+      // Apply the color transition
+      transitionMaterialColor(boxItems[0].material, color, 0.25);
+      transitionMaterialColor(boxItems[1].material, innerColor, 0.25);
 
-    boxItems[0].material.color.set(color);
-    boxItems[1].material.color.set(innerColor);
-
-    viewer.setDirty();
-
-    console.log(color , innerColor);
+      console.log(color, innerColor);
   });
 });
 
@@ -442,7 +475,7 @@ accent_options.forEach((btn) => {
     
     const color = btn.dataset.color;
     accents.forEach((accent) => {
-      accent.material.color.set(color);
+      transitionMaterialColor(accent.material, color, 0.25);
     });
     viewer.setDirty();
     
@@ -455,11 +488,50 @@ accent_options.forEach((btn) => {
   const canvasSnipper = await viewer.addPlugin(CanvasSnipperPlugin);
 
 
-  snapshotBtn.addEventListener("click", () => {
-    canvasSnipper.downloadSnapshot();
-  });
+  // snapshotBtn.addEventListener("click", () => {
+  //   canvasSnipper.downloadSnapshot();
+  // });
+
+  mobile_options.forEach((btn) => {
+
+    btn.addEventListener("click", () => {
+
+      console.log(btn.dataset.container)
+      showLayout(`.${btn.dataset.container}`);
+
+    })
+  })
 
 
+
+  function transitionMaterialColor(material, endColorHex, duration) {
+    const startColor = new Color(material.color.getHex());
+    const endColor = new Color(endColorHex);
+  
+    let startTime = null;
+    let isAnimating = true;
+  
+    function animateColorTransition(time) {
+        if (startTime === null) startTime = time;
+  
+        const elapsed = (time - startTime) / 1000; // in seconds
+        const lerpFactor = Math.min(elapsed / duration, 1);
+  
+        const currentColor = startColor.clone().lerp(endColor, lerpFactor);
+        material.color.set(currentColor);
+  
+        if (lerpFactor < 1) {
+            requestAnimationFrame(animateColorTransition);
+            viewer.setDirty()
+        } else {
+            isAnimating = false;
+        }
+    }
+  
+    if (isAnimating) {
+        requestAnimationFrame(animateColorTransition);
+    }
+  }
 
 
 
