@@ -13,7 +13,7 @@ import {
 
 import "./styles.css";
 import { getProject, types } from "@theatre/core";
-import studio from "@theatre/studio";
+// import studio from "@theatre/studio";
 
 import gsap from "gsap";
 
@@ -21,7 +21,7 @@ import gsap from "gsap";
 import projectState from "./state_new.json";
 
 async function setupViewer() {
-  studio.initialize()
+  // studio.initialize()
   // studio.extend(extension)
 
   // Create a project for the animation
@@ -420,7 +420,7 @@ closeContainer(btn.dataset.closecontainer)
   )
 })
 
-
+const isMobile = window.innerWidth < 768;
 
 
 // Oval Btn Configurations 
@@ -430,11 +430,19 @@ centerColorBtns.forEach((btn) => {
     // drop-shadow(2px 4px 6px black)
     centerColorBtns.forEach((otherBtn) => {
       if (otherBtn !== btn) {
-        otherBtn.style.border = "none";
+        if (isMobile) {
+          otherBtn.style.filter = "none";
+        } else{
+          otherBtn.style.border = "none";
+        }
       }
     });
     
-    btn.style.border = "1px solid #000";
+    if (isMobile) {
+      btn.style.filter = "drop-shadow(2px 4px 6px black)";
+    } else {
+      btn.style.border = "1px solid #000";
+    }
     
     const color = btn.dataset.color;
     transitionMaterialColor(oval.material, color, 0.25);
@@ -450,10 +458,19 @@ shank_options.forEach((btn) => {
 
     shank_options.forEach((otherBtn) => {
       if (otherBtn !== btn) {
-        otherBtn.style.border = "none";
+        if (isMobile) {
+          otherBtn.style.filter = "none";
+        } else{
+          otherBtn.style.border = "none";
+        }
       }
     });
-    btn.style.border = "1px solid #000";
+    
+    if (isMobile) {
+      btn.style.filter = "drop-shadow(2px 4px 6px black)";
+    } else {
+      btn.style.border = "1px solid #000";
+    }
 
     const color = btn.dataset.color;
     transitionMaterialColor(shank.material, color, 0.25);
@@ -473,11 +490,20 @@ box_options.forEach((btn) => {
       console.log(btn);
 
       box_options.forEach((otherBtn) => {
-          if (otherBtn !== btn) {
-              otherBtn.style.border = "none";
+        if (otherBtn !== btn) {
+          if (isMobile) {
+            otherBtn.style.filter = "none";
+          } else{
+            otherBtn.style.border = "none";
           }
+        }
       });
-      btn.style.border = "1px solid black";
+      
+      if (isMobile) {
+        btn.style.filter = "drop-shadow(2px 4px 6px black)";
+      } else {
+        btn.style.border = "1px solid #000";
+      }
 
       const color = btn.dataset.color;
       const innerColor = btn.dataset.innercolor;
@@ -498,11 +524,20 @@ accent_options.forEach((btn) => {
     
     accent_options.forEach((otherBtn) => {
       if (otherBtn !== btn) {
-        otherBtn.style.border = "none";
+        if (isMobile) {
+          otherBtn.style.filter = "none";
+        } else{
+          otherBtn.style.border = "none";
+        }
       }
     });
     
-    btn.style.border = "1px solid black";
+    if (isMobile) {
+      btn.style.filter = "drop-shadow(2px 4px 6px black)";
+    } else {
+      btn.style.border = "1px solid #000";
+    }
+    
     
     const color = btn.dataset.color;
     accents.forEach((accent) => {
