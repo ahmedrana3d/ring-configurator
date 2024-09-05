@@ -13,7 +13,7 @@ import {
 
 import "./styles.css";
 import { getProject, types } from "@theatre/core";
-// import studio from "@theatre/studio";
+import studio from "@theatre/studio";
 
 import gsap from "gsap";
 
@@ -21,7 +21,7 @@ import gsap from "gsap";
 import projectState from "./state_new.json";
 
 async function setupViewer() {
-  // studio.initialize()
+  studio.initialize()
   // studio.extend(extension)
 
   // Create a project for the animation
@@ -45,6 +45,7 @@ async function setupViewer() {
   const ovalContainer = document.getElementById("oval-container");
   const editLayout = document.querySelector(".edit-layout");
   const editLayoutMobile = document.querySelector(".edit-layout-mobile");
+  const skipBtn = document.getElementById("skip-btn");
   
 
   const optionContainer = document.getElementById("option-container");
@@ -119,6 +120,10 @@ async function setupViewer() {
     }
    
     // console.log(upperbox)
+
+    if (sheet.sequence.position > 13.05) {
+      skipBtn.style.display = "none";
+    }
 
     viewer.scene.activeCamera.positionUpdated(); // this must be called to notify the controller on value update
     viewer.setDirty();
@@ -220,6 +225,7 @@ console.log("Loaded")
 
 
       sheet.sequence.play({ range: [0, 13.5] });
+
       controls.enabled = false;
     }, 300);
 
@@ -237,6 +243,31 @@ console.log("Loaded")
       showLayout(".layout-1");
     }, 13700);
   }
+
+
+
+  skipBtn.addEventListener("click", () => {
+    sheet.sequence.pause();
+    const controls = viewer.scene.activeCamera.controls;
+
+  setTimeout(() => {
+    sheet.sequence.play({ range: [13.4, 13.5] });
+    skipBtn.style.display = "none";
+    controls.enabled = true;
+    controls.maxPolarAngle = Math.PI / 2 - 0.1;
+    controls.enableDamping = true;
+    controls.minDistance = 1.00;
+    controls.maxDistance = 40.00;
+    controls.enablePan = false
+  }, 1000);
+const tl = gsap.timeline();
+
+tl.fromTo(blackScreen, { opacity: 0 }, { opacity: 1, duration: 1 })
+  .fromTo(blackScreen, { opacity: 1 }, { opacity: 0, duration: 1 }, ">")
+
+
+  }
+  )
 
 
 
