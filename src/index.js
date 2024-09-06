@@ -39,13 +39,14 @@ async function setupViewer() {
   const shank_options = document.querySelectorAll(".shank_options");
   const box_options = document.querySelectorAll(".box_options");
   const closeOption = document.querySelectorAll(".close-option");
-  const snapshotBtn = document.getElementById("snapshotBtn");
-  const animateBtn = document.getElementById("play_animation");
   const ovalBtn = document.getElementById("oval-btn");
   const ovalContainer = document.getElementById("oval-container");
   const editLayout = document.querySelector(".edit-layout");
   const editLayoutMobile = document.querySelector(".edit-layout-mobile");
   const skipBtn = document.getElementById("skip-btn");
+  const snapshotBtn = document.getElementById("snapshot-icon");
+  const recenterBtn = document.getElementById("recenter-icon");
+  const cinematicBtn = document.getElementById("cinematic-icon");
   
 
   const optionContainer = document.getElementById("option-container");
@@ -280,6 +281,42 @@ tl.fromTo(blackScreen, { opacity: 0 }, { opacity: 1, duration: 1 })
   )
 
 
+
+  snapshotBtn.addEventListener("click", () => {
+    canvasSnipper.filename = "ring_design";
+    canvasSnipper.downloadSnapshot();
+  }
+  )
+
+  recenterBtn.addEventListener("click", () => {
+    gsap.to(viewer.scene.activeCamera.position, {
+      x : 0.05142029733085921,
+      y : 4.978943031325454,
+      z : 8.657993100810216,
+      duration: 1.5,
+      ease: "power2.inOut",
+      onStart : ()=>{
+        viewer.scene.activeCamera.controls.enabled = false;
+      },
+      onUpdate : ()=>{
+        viewer.scene.activeCamera.positionUpdated();
+      },
+      onComplete : ()=>{
+        viewer.scene.activeCamera.controls.enabled = true;
+      }
+        })
+  }
+  )
+
+
+  cinematicBtn.addEventListener("click", () => {
+    startAnimationSequence();
+    setTimeout(() => {
+      skipBtn.style.display = "block";
+    }, 1000);
+
+  }
+  )
 
 
 
