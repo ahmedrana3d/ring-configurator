@@ -569,9 +569,81 @@ accent_options.forEach((btn) => {
   mobile_options.forEach((btn) => {
 
     btn.addEventListener("click", () => {
+const container = btn.dataset.container;
 
-      console.log(btn.dataset.container)
+      if (container === "oval-mobile") {
+        gsap.to(viewer.scene.activeCamera.position, {
+          x : 0.15000000000012795,
+          y : 2.1199999999999917,
+          z : 1.7899999999999452,
+          duration: 1.5,
+          ease: "power2.inOut",
+          onStart : ()=>{
+            viewer.scene.activeCamera.controls.enabled = false;
+          },
+          onUpdate : ()=>{
+            viewer.scene.activeCamera.positionUpdated();
+          },
+          onComplete : ()=>{
+            viewer.scene.activeCamera.controls.enabled = true;
+          }
+                })
+            } else if ( container === "shank-mobile") {
+              gsap.to(viewer.scene.activeCamera.position, {
+                x : 2.0300000000001313,
+                y : 1.149999999999992,
+                z : -0.190000000000055,
+                duration: 1.5,
+                ease: "power2.inOut",
+                onStart : ()=>{
+                  viewer.scene.activeCamera.controls.enabled = false;
+                  
+                },
+                onUpdate : ()=>{
+                  viewer.scene.activeCamera.positionUpdated();
+                },
+                onComplete : ()=>{
+                  viewer.scene.activeCamera.controls.enabled = true;
+                }
+                  })
+            } else if ( container === "box-mobile") {
+              gsap.to(viewer.scene.activeCamera.position, {
+                x : 0.05142029733085921,
+                y : 4.978943031325454,
+                z : 8.657993100810216,
+                duration: 1.5,
+                ease: "power2.inOut",
+                onStart : ()=>{
+                  viewer.scene.activeCamera.controls.enabled = false;
+                },
+                onUpdate : ()=>{
+                  viewer.scene.activeCamera.positionUpdated();
+                },
+                onComplete : ()=>{
+                  viewer.scene.activeCamera.controls.enabled = true;
+                }
+                  })
+            } else if ( container === "accent-mobile" ) {
+              gsap.to(viewer.scene.activeCamera.position, {
+                x : 0.15000000000012795,
+                y : 2.1199999999999917,
+                z : -1.4800000000000562,
+                duration: 1.5,
+                ease: "power2.inOut",
+                onStart : ()=>{
+                  viewer.scene.activeCamera.controls.enabled = false;
+                },
+                onUpdate : ()=>{
+                  viewer.scene.activeCamera.positionUpdated();
+                },
+                onComplete : ()=>{
+                  viewer.scene.activeCamera.controls.enabled = true;
+                }
+                  })
+            }
+
       showLayout(`.${btn.dataset.container}`);
+      console.log(btn.dataset.container)
 
     })
   })
