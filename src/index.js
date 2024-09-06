@@ -13,7 +13,7 @@ import {
 
 import "./styles.css";
 import { getProject, types } from "@theatre/core";
-// import studio from "@theatre/studio";
+import studio from "@theatre/studio";
 
 import gsap from "gsap";
 
@@ -21,7 +21,7 @@ import gsap from "gsap";
 import projectState from "./state_new.json";
 
 async function setupViewer() {
-  // studio.initialize()
+  studio.initialize()
   // studio.extend(extension)
 
   // Create a project for the animation
@@ -400,9 +400,9 @@ options_btn.forEach((btn) => {
                 })
           } else if ( container === "accent-container" ) {
             gsap.to(viewer.scene.activeCamera.position, {
-              x : 0.15000000000012795,
-              y : 2.1199999999999917,
-              z : -1.4800000000000562,
+              x : -0.7799999999998757,
+              y : 2.1299999999999937,
+              z : 0.05999999999996581,
               duration: 1.5,
               ease: "power2.inOut",
               onStart : ()=>{
@@ -625,9 +625,9 @@ const container = btn.dataset.container;
                   })
             } else if ( container === "accent-mobile" ) {
               gsap.to(viewer.scene.activeCamera.position, {
-                x : 0.15000000000012795,
-                y : 2.1199999999999917,
-                z : -1.4800000000000562,
+                x : -0.7799999999998757,
+                y : 2.1299999999999937,
+                z : 0.05999999999996581,
                 duration: 1.5,
                 ease: "power2.inOut",
                 onStart : ()=>{
