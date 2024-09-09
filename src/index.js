@@ -1,4 +1,3 @@
-
 import {
   ViewerApp,
   AssetManagerPlugin,
@@ -6,7 +5,6 @@ import {
   // AssetManagerBasicPopupPlugin,
   CanvasSnipperPlugin,
   FileTransferPlugin,
-
   Color, // Import THREE.js internals
   // Texture, // Import THREE.js internals
 } from "webgi";
@@ -47,12 +45,11 @@ async function setupViewer() {
   const snapshotBtn = document.getElementById("snapshot-icon");
   const recenterBtn = document.getElementById("recenter-icon");
   const cinematicBtn = document.getElementById("cinematic-icon");
-  
 
   const optionContainer = document.getElementById("option-container");
   // const closeCheck = document.getElementById("close-check");
   const options_btn = document.querySelectorAll(".options_btn");
-  const closeCheck  = document.querySelectorAll(".close-check");
+  const closeCheck = document.querySelectorAll(".close-check");
   const mobile_options = document.querySelectorAll(".mobile_options");
 
   // Initialize the viewer
@@ -62,13 +59,11 @@ async function setupViewer() {
 
   const isMobile = window.innerWidth < 768;
 
-
-if (isMobile) { 
-  viewer.renderer.displayCanvasScaling = window.devicePixelRatio / 2.2
-} else {
-  viewer.renderer.displayCanvasScaling =  Math.min(window.devicePixelRatio, 1)
-}
-
+  if (isMobile) {
+    viewer.renderer.displayCanvasScaling = window.devicePixelRatio / 2.2;
+  } else {
+    viewer.renderer.displayCanvasScaling = Math.min(window.devicePixelRatio, 1);
+  }
 
   // or use this to add all main ones at once.
   await addBasePlugins(viewer); // check the source: https://codepen.io/repalash/pen/JjLxGmy for the list of plugins added.
@@ -98,7 +93,7 @@ if (isMobile) {
     screenOpacity: types.number(0, { nudgeMultiplier: 0.01, range: [0, 1] }),
     redScreenOpacity: types.number(0, { nudgeMultiplier: 0.01, range: [0, 1] }),
     logoOpacity: types.number(0, { nudgeMultiplier: 0.01, range: [0, 1] }),
-    showUI : types.boolean(false)
+    showUI: types.boolean(false),
   });
 
   const ringBox = sheet.object("Ring Box", {
@@ -120,17 +115,13 @@ if (isMobile) {
     redScreen.style.opacity = value.redScreenOpacity;
     logo.style.opacity = value.logoOpacity;
 
-
     if (window.innerWidth > 768) {
       editLayout.style.display = value.showUI ? "block" : "none";
-      editLayoutMobile.style.display = "none"
-    }
-    else {
+      editLayoutMobile.style.display = "none";
+    } else {
       editLayoutMobile.style.display = value.showUI ? "flex" : "none";
       editLayout.style.display = "none";
     }
-   
-    // console.log(upperbox)
 
     if (sheet.sequence.position > 13.05) {
       skipBtn.style.display = "none";
@@ -146,94 +137,102 @@ if (isMobile) {
 
   const importer = manager.importer;
 
-
-
   clipEl.style.transition = "clip-path 0.5s ease"; // Adjust the duration and easing as needed
 
-importer.addEventListener("onProgress", (event) => {
-  // Calculate the new progress value
-  const progress = (event.loaded / event.total) * 100;
+  importer.addEventListener("onProgress", (event) => {
+    // Calculate the new progress value
+    const progress = (event.loaded / event.total) * 100;
 
-  // Update the clip-path with a smooth transition
-  clipEl.style.clipPath = `inset(${100 - progress}% 0 0 0)`;
-});
-
+    // Update the clip-path with a smooth transition
+    clipEl.style.clipPath = `inset(${100 - progress}% 0 0 0)`;
+  });
 
   importer.addEventListener("onLoad", (event) => {
-
-
-
-
     startAnimationSequence();
+  });
 
-console.log("Loaded")
 
+
+  function onConfiguratorStart() {
+    const controls = viewer.scene.activeCamera.controls;
+    controls.autoRotateSpeed= 1.0
+    controls.autoRotate = true;
+    
+// Get the canvas and controls
+const canvas = document.getElementById("webgi-canvas");
+let isDragging = false;
+
+// Desktop: Stop auto-rotation when user starts dragging
+canvas.addEventListener("mousedown", () => {
+  isDragging = true;
+  controls.autoRotate = false; // Stop auto-rotation on click/drag
 });
 
-  
-  function hideLayout(element) {
-    const layout = document.querySelectorAll(element);
-    layout.forEach((el) => {
-      el.style.opacity = 0;
-      el.style.visibility = "hidden";
-    });
+canvas.addEventListener("mousemove", () => {
+  if (isDragging) {
+    controls.autoRotate = false; // Ensure rotation stops on drag move
   }
+});
+
+// Mobile: Stop auto-rotation on touch start and move
+canvas.addEventListener("touchstart", () => {
+  controls.autoRotate = false; // Stop auto-rotation on touch
+});
+
+canvas.addEventListener("touchmove", () => {
+  controls.autoRotate = false; // Stop auto-rotation on drag move
+});
+
+    
+  }
+
+
 
   function showLayout(element) {
     const layout = document.querySelectorAll(element);
     layout.forEach((el) => {
-      el.style.opacity = 0;
-      el.style.visibility = "visible";
-      el.style.transition = "opacity 0.2s ease";
-      setTimeout(() => {
-        el.style.opacity = 1;
-      }, 10);
+      el.style.transition = "opacity 0.3s ease, transform 0.6s ease";
+      el.style.opacity = "1"; // Fade in
+      el.style.transform = "translateY(0%)";
+
+      // Ensure editLayoutMobile is defined and its style is set properly
+      editLayoutMobile.style.transition =
+        "opacity 0.3s ease, transform 0.6s ease";
+      editLayoutMobile.style.transform = "translateY(100%)";
     });
   }
 
   closeOption.forEach((btn) => {
+    // Ensure the initial state of parentElement
+    btn.parentElement.style.transform = "translateY(100%)"; // Slide down initially
+
     btn.addEventListener("click", () => {
       const optionContainer = btn.parentElement;
-      optionContainer.style.transition = "opacity 0.6s ease"; // Add transition property
-      optionContainer.style.opacity = 0; // Start opacity transition
+      optionContainer.style.transition =
+        "opacity 0.3s ease, transform 0.6s ease";
+      optionContainer.style.opacity = "0"; // Fade out
+      optionContainer.style.transform = "translateY(100%)"; // Slide down
 
-      options_icon.forEach((icon) => {
-        icon.style.filter = "none";
-      });
-
-      // Use the transitionend event to change visibility after the opacity transition is done
-      optionContainer.addEventListener(
-        "transitionend",
-        () => {
-          optionContainer.style.visibility = "hidden";
-        },
-        { once: true }
-      ); // The { once: true } option ensures the event listener is removed after it fires once
+      // Ensure editLayoutMobile style is applied correctly
+      editLayoutMobile.style.transition =
+        "opacity 0.3s ease, transform 0.6s ease";
+      editLayoutMobile.style.transform = "translateY(0%)"; // Slide in
     });
   });
 
   function startAnimationSequence() {
     const controls = viewer.scene.activeCamera.controls;
 
-
-
-
-
     setTimeout(() => {
-
-
       if (window.innerWidth > 768) {
         const options = viewer.scene.activeCamera.getCameraOptions();
         options.fov = 25;
         viewer.scene.activeCamera.setCameraOptions(options);
-      }
-      else {
+      } else {
         const options = viewer.scene.activeCamera.getCameraOptions();
-        options.fov = 45 ;
+        options.fov = 45;
         viewer.scene.activeCamera.setCameraOptions(options);
-  
       }
-
 
       sheet.sequence.play({ range: [0, 13.5] });
 
@@ -244,10 +243,11 @@ console.log("Loaded")
       controls.enabled = true;
       controls.maxPolarAngle = Math.PI / 2 - 0.1;
       controls.enableDamping = true;
-      controls.minDistance = 1.00;
-      controls.maxDistance = 40.00;
-      controls.enablePan = false
- 
+      controls.minDistance = 1.0;
+      controls.maxDistance = 17.0;
+      controls.enablePan = false;
+
+      onConfiguratorStart();
 
       // showLayout(".layout-2");
       showLayout(".options_container");
@@ -255,76 +255,64 @@ console.log("Loaded")
     }, 13700);
   }
 
-
-
   skipBtn.addEventListener("click", () => {
     sheet.sequence.pause();
     const controls = viewer.scene.activeCamera.controls;
 
-  setTimeout(() => {
-    sheet.sequence.play({ range: [13.4, 13.5] });
-    skipBtn.style.display = "none";
-    controls.enabled = true;
-    controls.maxPolarAngle = Math.PI / 2 - 0.1;
-    controls.enableDamping = true;
-    controls.minDistance = 1.00;
-    controls.maxDistance = 40.00;
-    controls.enablePan = false
-  }, 1000);
-const tl = gsap.timeline();
+    setTimeout(() => {
+      sheet.sequence.play({ range: [13.4, 13.5] });
+      skipBtn.style.display = "none";
+      controls.enabled = true;
+      controls.maxPolarAngle = Math.PI / 2 - 0.1;
+      controls.enableDamping = true;
+      controls.minDistance = 1.0;
+      controls.maxDistance = 17.0;
+      controls.enablePan = false;
+      onConfiguratorStart();
+    }, 1000);
+    const tl = gsap.timeline();
 
-tl.fromTo(blackScreen, { opacity: 0 }, { opacity: 1, duration: 1 })
-  .fromTo(blackScreen, { opacity: 1 }, { opacity: 0, duration: 1 }, ">")
-
-
-  }
-  )
-
-
+    tl.fromTo(blackScreen, { opacity: 0 }, { opacity: 1, duration: 1 }).fromTo(
+      blackScreen,
+      { opacity: 1 },
+      { opacity: 0, duration: 1 },
+      ">"
+    );
+  });
 
   snapshotBtn.addEventListener("click", () => {
     canvasSnipper.filename = "ring_design";
     canvasSnipper.downloadSnapshot();
-  }
-  )
+  });
 
   recenterBtn.addEventListener("click", () => {
     gsap.to(viewer.scene.activeCamera.position, {
-      x : 0.05142029733085921,
-      y : 4.978943031325454,
-      z : 8.657993100810216,
+      x: 0.05142029733085921,
+      y: 4.978943031325454,
+      z: 8.657993100810216,
       duration: 1.5,
       ease: "power2.inOut",
-      onStart : ()=>{
+      onStart: () => {
         viewer.scene.activeCamera.controls.enabled = false;
       },
-      onUpdate : ()=>{
+      onUpdate: () => {
         viewer.scene.activeCamera.positionUpdated();
       },
-      onComplete : ()=>{
+      onComplete: () => {
         viewer.scene.activeCamera.controls.enabled = true;
-      }
-        })
-  }
-  )
-
+      },
+    });
+  });
 
   cinematicBtn.addEventListener("click", () => {
     startAnimationSequence();
     setTimeout(() => {
+      onConfiguratorStart();
       skipBtn.style.display = "block";
     }, 1000);
+  });
 
-  }
-  )
-
-
-
-
-
-
-   await manager.addFromPath("./assets/ring_white.glb");
-
+  await manager.addFromPath("./assets/ring_white.glb");
 
   // const ground = await viewer.addPlugin(GroundPlugin);
 
@@ -353,197 +341,176 @@ tl.fromTo(blackScreen, { opacity: 0 }, { opacity: 1, duration: 1 })
   const boxItems = [
     viewer.scene.findObjectsByName("item01")[0].modelObject,
     viewer.scene.findObjectsByName("item02")[0].modelObject,
-  ]
+  ];
 
   const ground = viewer.scene.findObjectsByName("Ground Plane")[0].modelObject;
 
-
-
-
-
-function animateContainer(element) {
-  const container = document.getElementById(element);
-  optionContainer.style.scale =  0.99;
-  optionContainer.style.opacity = 0.4;
-  optionContainer.style.transform = "translateX(-3%)";
-   container.style.transform = "translateX(0)";
-}
-
-function closeContainer(element) {
-  const container = document.getElementById(element);
-  optionContainer.style.opacity = 1;
-  optionContainer.style.scale = 1;
-  optionContainer.style.transform = "translateX(0)";
-  container.style.transform = "translateX(100%)";
-}
-
-
-options_btn.forEach((btn) => {
-
-  btn.addEventListener("click", () => {
-    const container = btn.dataset.container;
-
-    if (container === "oval-container") {
-      gsap.to(viewer.scene.activeCamera.position, {
-        x : 0.15000000000012795,
-        y : 2.1199999999999917,
-        z : 1.7899999999999452,
-        duration: 1.5,
-        ease: "power2.inOut",
-        onStart : ()=>{
-          viewer.scene.activeCamera.controls.enabled = false;
-        },
-        onUpdate : ()=>{
-          viewer.scene.activeCamera.positionUpdated();
-        },
-        onComplete : ()=>{
-          viewer.scene.activeCamera.controls.enabled = true;
-        }
-              })
-          } else if ( container === "shank-container") {
-            gsap.to(viewer.scene.activeCamera.position, {
-              x : 2.0300000000001313,
-              y : 1.149999999999992,
-              z : -0.190000000000055,
-              duration: 1.5,
-              ease: "power2.inOut",
-              onStart : ()=>{
-                viewer.scene.activeCamera.controls.enabled = false;
-                
-              },
-              onUpdate : ()=>{
-                viewer.scene.activeCamera.positionUpdated();
-              },
-              onComplete : ()=>{
-                viewer.scene.activeCamera.controls.enabled = true;
-              }
-                })
-          } else if ( container === "box-container") {
-            gsap.to(viewer.scene.activeCamera.position, {
-              x : 0.05142029733085921,
-              y : 4.978943031325454,
-              z : 8.657993100810216,
-              duration: 1.5,
-              ease: "power2.inOut",
-              onStart : ()=>{
-                viewer.scene.activeCamera.controls.enabled = false;
-              },
-              onUpdate : ()=>{
-                viewer.scene.activeCamera.positionUpdated();
-              },
-              onComplete : ()=>{
-                viewer.scene.activeCamera.controls.enabled = true;
-              }
-                })
-          } else if ( container === "accent-container" ) {
-            gsap.to(viewer.scene.activeCamera.position, {
-              x : -0.7799999999998757,
-              y : 2.1299999999999937,
-              z : 0.05999999999996581,
-              duration: 1.5,
-              ease: "power2.inOut",
-              onStart : ()=>{
-                viewer.scene.activeCamera.controls.enabled = false;
-              },
-              onUpdate : ()=>{
-                viewer.scene.activeCamera.positionUpdated();
-              },
-              onComplete : ()=>{
-                viewer.scene.activeCamera.controls.enabled = true;
-              }
-                })
-          }
-
-
-animateContainer(container)
-  })
-})
-
-
-closeCheck.forEach((btn) => {
-  btn.addEventListener("click", () => {
-closeContainer(btn.dataset.closecontainer)
+  function animateContainer(element) {
+    const container = document.getElementById(element);
+    optionContainer.style.scale = 0.99;
+    optionContainer.style.opacity = 0.4;
+    optionContainer.style.transform = "translateX(-3%)";
+    container.style.transform = "translateX(0)";
   }
-  )
-})
 
+  function closeContainer(element) {
+    const container = document.getElementById(element);
+    optionContainer.style.opacity = 1;
+    optionContainer.style.scale = 1;
+    optionContainer.style.transform = "translateX(0)";
+    container.style.transform = "translateX(100%)";
+  }
 
-// Oval Btn Configurations 
+  options_btn.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const container = btn.dataset.container;
 
-centerColorBtns.forEach((btn) => {
-  btn.addEventListener("click", () => {
-    // drop-shadow(2px 4px 6px black)
-    centerColorBtns.forEach((otherBtn) => {
-      if (otherBtn !== btn) {
-        if (isMobile) {
-          otherBtn.style.filter = "none";
-        } else{
-          otherBtn.style.border = "none";
-        }
+      if (container === "oval-container") {
+        gsap.to(viewer.scene.activeCamera.position, {
+          x: 0.15000000000012795,
+          y: 2.1199999999999917,
+          z: 1.7899999999999452,
+          duration: 1.5,
+          ease: "power2.inOut",
+          onStart: () => {
+            viewer.scene.activeCamera.controls.enabled = false;
+          },
+          onUpdate: () => {
+            viewer.scene.activeCamera.positionUpdated();
+          },
+          onComplete: () => {
+            viewer.scene.activeCamera.controls.enabled = true;
+          },
+        });
+      } else if (container === "shank-container") {
+        gsap.to(viewer.scene.activeCamera.position, {
+          x: 2.0300000000001313,
+          y: 1.149999999999992,
+          z: -0.190000000000055,
+          duration: 1.5,
+          ease: "power2.inOut",
+          onStart: () => {
+            viewer.scene.activeCamera.controls.enabled = false;
+          },
+          onUpdate: () => {
+            viewer.scene.activeCamera.positionUpdated();
+          },
+          onComplete: () => {
+            viewer.scene.activeCamera.controls.enabled = true;
+          },
+        });
+      } else if (container === "box-container") {
+        gsap.to(viewer.scene.activeCamera.position, {
+          x: 0.05142029733085921,
+          y: 4.978943031325454,
+          z: 8.657993100810216,
+          duration: 1.5,
+          ease: "power2.inOut",
+          onStart: () => {
+            viewer.scene.activeCamera.controls.enabled = false;
+          },
+          onUpdate: () => {
+            viewer.scene.activeCamera.positionUpdated();
+          },
+          onComplete: () => {
+            viewer.scene.activeCamera.controls.enabled = true;
+          },
+        });
+      } else if (container === "accent-container") {
+        gsap.to(viewer.scene.activeCamera.position, {
+          x: -0.7799999999998757,
+          y: 2.1299999999999937,
+          z: 0.05999999999996581,
+          duration: 1.5,
+          ease: "power2.inOut",
+          onStart: () => {
+            viewer.scene.activeCamera.controls.enabled = false;
+          },
+          onUpdate: () => {
+            viewer.scene.activeCamera.positionUpdated();
+          },
+          onComplete: () => {
+            viewer.scene.activeCamera.controls.enabled = true;
+          },
+        });
       }
+
+      animateContainer(container);
     });
-    
-    if (isMobile) {
-      btn.style.filter = "drop-shadow(2px 4px 6px black)";
-    } else {
-      btn.style.border = "1px solid #000";
-    }
-    
-    const color = btn.dataset.color;
-    transitionMaterialColor(oval.material, color, 0.25);
-    viewer.setDirty();
-    
-    console.log(color);
   });
-});
 
-
-shank_options.forEach((btn) => {
-  btn.addEventListener("click", () => {
-
-    shank_options.forEach((otherBtn) => {
-      if (otherBtn !== btn) {
-        if (isMobile) {
-          otherBtn.style.filter = "none";
-        } else{
-          otherBtn.style.border = "none";
-        }
-      }
+  closeCheck.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      closeContainer(btn.dataset.closecontainer);
     });
-    
-    if (isMobile) {
-      btn.style.filter = "drop-shadow(2px 4px 6px black)";
-    } else {
-      btn.style.border = "1px solid #000";
-    }
-
-    const color = btn.dataset.color;
-    transitionMaterialColor(shank.material, color, 0.25);
-    viewer.setDirty();
-
-    console.log(color);
   });
-});
 
+  // Oval Btn Configurations
 
-
-// Function to animate color transition
-
-// Event listener for button clicks
-box_options.forEach((btn) => {
-  btn.addEventListener("click", () => {
-      console.log(btn);
-
-      box_options.forEach((otherBtn) => {
+  centerColorBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      // drop-shadow(2px 4px 6px black)
+      centerColorBtns.forEach((otherBtn) => {
         if (otherBtn !== btn) {
           if (isMobile) {
             otherBtn.style.filter = "none";
-          } else{
+          } else {
             otherBtn.style.border = "none";
           }
         }
       });
-      
+
+      if (isMobile) {
+        btn.style.filter = "drop-shadow(2px 4px 6px black)";
+      } else {
+        btn.style.border = "1px solid #000";
+      }
+
+      const color = btn.dataset.color;
+      transitionMaterialColor(oval.material, color, 0.25);
+      viewer.setDirty();
+    });
+  });
+
+  shank_options.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      shank_options.forEach((otherBtn) => {
+        if (otherBtn !== btn) {
+          if (isMobile) {
+            otherBtn.style.filter = "none";
+          } else {
+            otherBtn.style.border = "none";
+          }
+        }
+      });
+
+      if (isMobile) {
+        btn.style.filter = "drop-shadow(2px 4px 6px black)";
+      } else {
+        btn.style.border = "1px solid #000";
+      }
+
+      const color = btn.dataset.color;
+      transitionMaterialColor(shank.material, color, 0.25);
+      viewer.setDirty();
+    });
+  });
+
+  // Function to animate color transition
+
+  // Event listener for button clicks
+  box_options.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      box_options.forEach((otherBtn) => {
+        if (otherBtn !== btn) {
+          if (isMobile) {
+            otherBtn.style.filter = "none";
+          } else {
+            otherBtn.style.border = "none";
+          }
+        }
+      });
+
       if (isMobile) {
         btn.style.filter = "drop-shadow(2px 4px 6px black)";
       } else {
@@ -556,169 +523,147 @@ box_options.forEach((btn) => {
       // Apply the color transition
       transitionMaterialColor(boxItems[0].material, color, 0.25);
       transitionMaterialColor(boxItems[1].material, innerColor, 0.25);
-
-      console.log(color, innerColor);
+    });
   });
-});
 
-
-accent_options.forEach((btn) => {
-  btn.addEventListener("click", () => {
-
-
-    
-    accent_options.forEach((otherBtn) => {
-      if (otherBtn !== btn) {
-        if (isMobile) {
-          otherBtn.style.filter = "none";
-        } else{
-          otherBtn.style.border = "none";
+  accent_options.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      accent_options.forEach((otherBtn) => {
+        if (otherBtn !== btn) {
+          if (isMobile) {
+            otherBtn.style.filter = "none";
+          } else {
+            otherBtn.style.border = "none";
+          }
         }
+      });
+
+      if (isMobile) {
+        btn.style.filter = "drop-shadow(2px 4px 6px black)";
+      } else {
+        btn.style.border = "1px solid #000";
       }
+
+      const color = btn.dataset.color;
+      accents.forEach((accent) => {
+        transitionMaterialColor(accent.material, color, 0.25);
+      });
+      viewer.setDirty();
     });
-    
-    if (isMobile) {
-      btn.style.filter = "drop-shadow(2px 4px 6px black)";
-    } else {
-      btn.style.border = "1px solid #000";
-    }
-    
-    
-    const color = btn.dataset.color;
-    accents.forEach((accent) => {
-      transitionMaterialColor(accent.material, color, 0.25);
-    });
-    viewer.setDirty();
-    
-    console.log(color);
   });
-});
-
-
 
   const canvasSnipper = await viewer.addPlugin(CanvasSnipperPlugin);
-
 
   // snapshotBtn.addEventListener("click", () => {
   //   canvasSnipper.downloadSnapshot();
   // });
 
   mobile_options.forEach((btn) => {
-
     btn.addEventListener("click", () => {
-const container = btn.dataset.container;
+      const container = btn.dataset.container;
 
       if (container === "oval-mobile") {
         gsap.to(viewer.scene.activeCamera.position, {
-          x : 0.15000000000012795,
-          y : 2.1199999999999917,
-          z : 1.7899999999999452,
+          x: 0.15000000000012795,
+          y: 2.1199999999999917,
+          z: 1.7899999999999452,
           duration: 1.5,
           ease: "power2.inOut",
-          onStart : ()=>{
+          onStart: () => {
             viewer.scene.activeCamera.controls.enabled = false;
           },
-          onUpdate : ()=>{
+          onUpdate: () => {
             viewer.scene.activeCamera.positionUpdated();
           },
-          onComplete : ()=>{
+          onComplete: () => {
             viewer.scene.activeCamera.controls.enabled = true;
-          }
-                })
-            } else if ( container === "shank-mobile") {
-              gsap.to(viewer.scene.activeCamera.position, {
-                x : 2.0300000000001313,
-                y : 1.149999999999992,
-                z : -0.190000000000055,
-                duration: 1.5,
-                ease: "power2.inOut",
-                onStart : ()=>{
-                  viewer.scene.activeCamera.controls.enabled = false;
-                  
-                },
-                onUpdate : ()=>{
-                  viewer.scene.activeCamera.positionUpdated();
-                },
-                onComplete : ()=>{
-                  viewer.scene.activeCamera.controls.enabled = true;
-                }
-                  })
-            } else if ( container === "box-mobile") {
-              gsap.to(viewer.scene.activeCamera.position, {
-                x : 0.05142029733085921,
-                y : 4.978943031325454,
-                z : 8.657993100810216,
-                duration: 1.5,
-                ease: "power2.inOut",
-                onStart : ()=>{
-                  viewer.scene.activeCamera.controls.enabled = false;
-                },
-                onUpdate : ()=>{
-                  viewer.scene.activeCamera.positionUpdated();
-                },
-                onComplete : ()=>{
-                  viewer.scene.activeCamera.controls.enabled = true;
-                }
-                  })
-            } else if ( container === "accent-mobile" ) {
-              gsap.to(viewer.scene.activeCamera.position, {
-                x : -0.7799999999998757,
-                y : 2.1299999999999937,
-                z : 0.05999999999996581,
-                duration: 1.5,
-                ease: "power2.inOut",
-                onStart : ()=>{
-                  viewer.scene.activeCamera.controls.enabled = false;
-                },
-                onUpdate : ()=>{
-                  viewer.scene.activeCamera.positionUpdated();
-                },
-                onComplete : ()=>{
-                  viewer.scene.activeCamera.controls.enabled = true;
-                }
-                  })
-            }
+          },
+        });
+      } else if (container === "shank-mobile") {
+        gsap.to(viewer.scene.activeCamera.position, {
+          x: 2.0300000000001313,
+          y: 1.149999999999992,
+          z: -0.190000000000055,
+          duration: 1.5,
+          ease: "power2.inOut",
+          onStart: () => {
+            viewer.scene.activeCamera.controls.enabled = false;
+          },
+          onUpdate: () => {
+            viewer.scene.activeCamera.positionUpdated();
+          },
+          onComplete: () => {
+            viewer.scene.activeCamera.controls.enabled = true;
+          },
+        });
+      } else if (container === "box-mobile") {
+        gsap.to(viewer.scene.activeCamera.position, {
+          x: 0.05142029733085921,
+          y: 4.978943031325454,
+          z: 8.657993100810216,
+          duration: 1.5,
+          ease: "power2.inOut",
+          onStart: () => {
+            viewer.scene.activeCamera.controls.enabled = false;
+          },
+          onUpdate: () => {
+            viewer.scene.activeCamera.positionUpdated();
+          },
+          onComplete: () => {
+            viewer.scene.activeCamera.controls.enabled = true;
+          },
+        });
+      } else if (container === "accent-mobile") {
+        gsap.to(viewer.scene.activeCamera.position, {
+          x: -0.7799999999998757,
+          y: 2.1299999999999937,
+          z: 0.05999999999996581,
+          duration: 1.5,
+          ease: "power2.inOut",
+          onStart: () => {
+            viewer.scene.activeCamera.controls.enabled = false;
+          },
+          onUpdate: () => {
+            viewer.scene.activeCamera.positionUpdated();
+          },
+          onComplete: () => {
+            viewer.scene.activeCamera.controls.enabled = true;
+          },
+        });
+      }
 
       showLayout(`.${btn.dataset.container}`);
-      console.log(btn.dataset.container)
-
-    })
-  })
-
-
+    });
+  });
 
   function transitionMaterialColor(material, endColorHex, duration) {
     const startColor = new Color(material.color.getHex());
     const endColor = new Color(endColorHex);
-  
+
     let startTime = null;
     let isAnimating = true;
-  
+
     function animateColorTransition(time) {
-        if (startTime === null) startTime = time;
-  
-        const elapsed = (time - startTime) / 1000; // in seconds
-        const lerpFactor = Math.min(elapsed / duration, 1);
-  
-        const currentColor = startColor.clone().lerp(endColor, lerpFactor);
-        material.color.set(currentColor);
-  
-        if (lerpFactor < 1) {
-            requestAnimationFrame(animateColorTransition);
-            viewer.setDirty()
-        } else {
-            isAnimating = false;
-        }
-    }
-  
-    if (isAnimating) {
+      if (startTime === null) startTime = time;
+
+      const elapsed = (time - startTime) / 1000; // in seconds
+      const lerpFactor = Math.min(elapsed / duration, 1);
+
+      const currentColor = startColor.clone().lerp(endColor, lerpFactor);
+      material.color.set(currentColor);
+
+      if (lerpFactor < 1) {
         requestAnimationFrame(animateColorTransition);
+        viewer.setDirty();
+      } else {
+        isAnimating = false;
+      }
+    }
+
+    if (isAnimating) {
+      requestAnimationFrame(animateColorTransition);
     }
   }
-
-
-
-
 }
 
 setupViewer();
@@ -731,6 +676,3 @@ setupViewer();
 
 // // Add more plugins not available in base, like CanvasSnipperPlugin which has helpers to download an image of the canvas.
 // await viewer.addPlugin(CanvasSnipperPlugin)
-
-
-
