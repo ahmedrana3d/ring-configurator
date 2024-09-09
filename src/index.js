@@ -228,6 +228,27 @@ window.addEventListener("touchmove", () => {
       editLayoutMobile.style.transition =
         "opacity 0.3s ease, transform 0.6s ease";
       editLayoutMobile.style.transform = "translateY(0%)"; // Slide in
+
+
+      gsap.to(viewer.scene.activeCamera.position, {
+        x: 0.051,
+        y: 4.978,
+        z: 8.657,
+        duration: 1.5,
+        ease: "power2.inOut",
+        onStart: () => {
+          viewer.scene.activeCamera.controls.enabled = false;
+        },
+        onUpdate: () => {
+          viewer.scene.activeCamera.positionUpdated();
+        },
+        onComplete: () => {
+          viewer.scene.activeCamera.controls.enabled = true;
+        },
+      });
+
+
+
     });
   });
 
@@ -458,23 +479,6 @@ window.addEventListener("touchmove", () => {
   closeCheck.forEach((btn) => {
     btn.addEventListener("click", () => {
       closeContainer(btn.dataset.closecontainer);
-
-      gsap.to(viewer.scene.activeCamera.position, {
-        x: 0.05142029733085921,
-        y: 4.978943031325454,
-        z: 8.657993100810216,
-        duration: 1.5,
-        ease: "power2.inOut",
-        onStart: () => {
-          viewer.scene.activeCamera.controls.enabled = false;
-        },
-        onUpdate: () => {
-          viewer.scene.activeCamera.positionUpdated();
-        },
-        onComplete: () => {
-          viewer.scene.activeCamera.controls.enabled = true;
-        },
-      });
 
     });
   });
