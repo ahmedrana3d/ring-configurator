@@ -51,6 +51,7 @@ async function setupViewer() {
   const options_btn = document.querySelectorAll(".options_btn");
   const closeCheck = document.querySelectorAll(".close-check");
   const mobile_options = document.querySelectorAll(".mobile_options");
+  
 
   // Initialize the viewer
   const viewer = new ViewerApp({
@@ -155,6 +156,8 @@ async function setupViewer() {
 
   function onConfiguratorStart() {
     const controls = viewer.scene.activeCamera.controls;
+    const moveIndicator = document.getElementById("move-indicator");
+    moveIndicator.style.visibility = "visible";
     controls.autoRotateSpeed= 1.0
     controls.autoRotate = true;
     
@@ -166,21 +169,29 @@ let isDragging = false;
 canvas.addEventListener("mousedown", () => {
   isDragging = true;
   controls.autoRotate = false; // Stop auto-rotation on click/drag
+  moveIndicator.style.visibility = "hidden"
+  
 });
 
 canvas.addEventListener("mousemove", () => {
   if (isDragging) {
     controls.autoRotate = false; // Ensure rotation stops on drag move
+    moveIndicator.style.visibility = "hidden"
+    
   }
 });
 
 // Mobile: Stop auto-rotation on touch start and move
 canvas.addEventListener("touchstart", () => {
   controls.autoRotate = false; // Stop auto-rotation on touch
+  moveIndicator.style.visibility = "hidden"
+  
 });
 
 canvas.addEventListener("touchmove", () => {
   controls.autoRotate = false; // Stop auto-rotation on drag move
+  moveIndicator.style.visibility = "hidden"
+  
 });
 
     
