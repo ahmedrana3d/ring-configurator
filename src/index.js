@@ -135,7 +135,7 @@ async function setupViewer() {
   // 0.04
 
   // Loading Logic
-
+let skipped = false;
   const importer = manager.importer;
 
   clipEl.style.transition = "clip-path 0.5s ease"; // Adjust the duration and easing as needed
@@ -166,14 +166,14 @@ const canvas = document.getElementById("webgi-canvas");
 let isDragging = false;
 
 // Desktop: Stop auto-rotation when user starts dragging
-canvas.addEventListener("mousedown", () => {
+window.addEventListener("mousedown", () => {
   isDragging = true;
   controls.autoRotate = false; // Stop auto-rotation on click/drag
   moveIndicator.style.visibility = "hidden"
   
 });
 
-canvas.addEventListener("mousemove", () => {
+window.addEventListener("mousemove", () => {
   if (isDragging) {
     controls.autoRotate = false; // Ensure rotation stops on drag move
     moveIndicator.style.visibility = "hidden"
@@ -182,13 +182,13 @@ canvas.addEventListener("mousemove", () => {
 });
 
 // Mobile: Stop auto-rotation on touch start and move
-canvas.addEventListener("touchstart", () => {
+window.addEventListener("touchstart", () => {
   controls.autoRotate = false; // Stop auto-rotation on touch
   moveIndicator.style.visibility = "hidden"
   
 });
 
-canvas.addEventListener("touchmove", () => {
+window.addEventListener("touchmove", () => {
   controls.autoRotate = false; // Stop auto-rotation on drag move
   moveIndicator.style.visibility = "hidden"
   
@@ -255,10 +255,14 @@ canvas.addEventListener("touchmove", () => {
       controls.maxPolarAngle = Math.PI / 2 - 0.1;
       controls.enableDamping = true;
       controls.minDistance = 1.0;
-      controls.maxDistance = 17.0;
+      controls.maxDistance = 10;
       controls.enablePan = false;
 
-      onConfiguratorStart();
+      if (skipped) {
+       return;
+      } else {
+        onConfiguratorStart();
+      }
 
       // showLayout(".layout-2");
       showLayout(".options_container");
@@ -277,9 +281,10 @@ canvas.addEventListener("touchmove", () => {
       controls.maxPolarAngle = Math.PI / 2 - 0.1;
       controls.enableDamping = true;
       controls.minDistance = 1.0;
-      controls.maxDistance = 17.0;
+      controls.maxDistance = 10;
       controls.enablePan = false;
       onConfiguratorStart();
+      skipped = true;
     }, 1000);
     const tl = gsap.timeline();
 
@@ -453,6 +458,24 @@ canvas.addEventListener("touchmove", () => {
   closeCheck.forEach((btn) => {
     btn.addEventListener("click", () => {
       closeContainer(btn.dataset.closecontainer);
+
+      gsap.to(viewer.scene.activeCamera.position, {
+        x: 0.05142029733085921,
+        y: 4.978943031325454,
+        z: 8.657993100810216,
+        duration: 1.5,
+        ease: "power2.inOut",
+        onStart: () => {
+          viewer.scene.activeCamera.controls.enabled = false;
+        },
+        onUpdate: () => {
+          viewer.scene.activeCamera.positionUpdated();
+        },
+        onComplete: () => {
+          viewer.scene.activeCamera.controls.enabled = true;
+        },
+      });
+
     });
   });
 
@@ -460,46 +483,59 @@ canvas.addEventListener("touchmove", () => {
 
   centerColorBtns.forEach((btn) => {
     btn.addEventListener("click", () => {
-      // drop-shadow(2px 4px 6px black)
+      // Reset all other buttons first
       centerColorBtns.forEach((otherBtn) => {
         if (otherBtn !== btn) {
           if (isMobile) {
-            otherBtn.style.filter = "none";
+            // Reset scale for other buttons
+            otherBtn.style.transform = "scale(1)";
+            otherBtn.style.transition = "all 0.3s ease";
           } else {
+            // Reset border for other buttons
             otherBtn.style.border = "none";
           }
         }
       });
-
+  
+      // Apply the highlight to the clicked button
       if (isMobile) {
-        btn.style.filter = "drop-shadow(2px 4px 6px black)";
+        btn.style.transform = "scale(1.1)";
+        btn.style.transition = "all 0.3s ease";
       } else {
         btn.style.border = "1px solid #000";
       }
-
+  
+      // Change color of the material
       const color = btn.dataset.color;
       transitionMaterialColor(oval.material, color, 0.25);
       viewer.setDirty();
     });
   });
+  
 
   shank_options.forEach((btn) => {
     btn.addEventListener("click", () => {
       shank_options.forEach((otherBtn) => {
         if (otherBtn !== btn) {
           if (isMobile) {
-            otherBtn.style.filter = "none";
+            // Reset scale for other buttons
+            otherBtn.style.transform = "scale(1)";
+            otherBtn.style.transition = "all 0.3s ease";
           } else {
+            // Reset border for other buttons
             otherBtn.style.border = "none";
           }
         }
       });
-
+  
+      // Apply the highlight to the clicked button
       if (isMobile) {
-        btn.style.filter = "drop-shadow(2px 4px 6px black)";
+        btn.style.transform = "scale(1.1)";
+        btn.style.transition = "all 0.3s ease";
       } else {
         btn.style.border = "1px solid #000";
       }
+      
 
       const color = btn.dataset.color;
       transitionMaterialColor(shank.material, color, 0.25);
@@ -515,15 +551,20 @@ canvas.addEventListener("touchmove", () => {
       box_options.forEach((otherBtn) => {
         if (otherBtn !== btn) {
           if (isMobile) {
-            otherBtn.style.filter = "none";
+            // Reset scale for other buttons
+            otherBtn.style.transform = "scale(1)";
+            otherBtn.style.transition = "all 0.3s ease";
           } else {
+            // Reset border for other buttons
             otherBtn.style.border = "none";
           }
         }
       });
-
+  
+      // Apply the highlight to the clicked button
       if (isMobile) {
-        btn.style.filter = "drop-shadow(2px 4px 6px black)";
+        btn.style.transform = "scale(1.1)";
+        btn.style.transition = "all 0.3s ease";
       } else {
         btn.style.border = "1px solid #000";
       }
@@ -542,19 +583,25 @@ canvas.addEventListener("touchmove", () => {
       accent_options.forEach((otherBtn) => {
         if (otherBtn !== btn) {
           if (isMobile) {
-            otherBtn.style.filter = "none";
+            // Reset scale for other buttons
+            otherBtn.style.transform = "scale(1)";
+            otherBtn.style.transition = "all 0.3s ease";
           } else {
+            // Reset border for other buttons
             otherBtn.style.border = "none";
           }
         }
       });
-
+  
+      // Apply the highlight to the clicked button
       if (isMobile) {
-        btn.style.filter = "drop-shadow(2px 4px 6px black)";
+        btn.style.transform = "scale(1.1)";
+        btn.style.transition = "all 0.3s ease";
       } else {
         btn.style.border = "1px solid #000";
       }
-
+      
+ 
       const color = btn.dataset.color;
       accents.forEach((accent) => {
         transitionMaterialColor(accent.material, color, 0.25);
